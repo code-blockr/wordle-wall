@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS scores (
+  id    INTEGER PRIMARY KEY AUTOINCREMENT,
+  name  TEXT    NOT NULL,
+  score TEXT    NOT NULL,
+  date  TEXT    NOT NULL,
+  UNIQUE(name, date)
+);

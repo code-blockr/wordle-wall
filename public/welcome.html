@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OPS Wordle Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: #F2F2F2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .ontario-header {
+      background: #1A1A1A;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      flex-shrink: 0;
+    }
+
+    /* Main */
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #E5E5E5;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.10);
+      width: 100%;
+      max-width: 400px;
+      overflow: hidden;
+    }
+
+    .card-dark {
+      background: #1A1A1A;
+      padding: 28px 40px 24px;
+    }
+
+    .card-dark-tagline {
+      font-size: 0.75rem;
+      color: #fff;
+      margin-top: 0.25rem;
+      line-height: 1.4;
+      font-style: italic;
+    }
+
+    .card-body {
+      padding: 28px 40px 36px;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      color: #767676;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-family: 'Raleway', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #4B4B4B;
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1A1A1A;
+      margin-bottom: 5px;
+    }
+
+    select {
+      display: block;
+      width: 100%;
+      padding: 10px 36px 10px 14px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 15px;
+      color: #1A1A1A;
+      background-color: #fff;
+      border: 1px solid #CCCCCC;
+      border-radius: 4px;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23767676' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      cursor: pointer;
+    }
+    select:focus {
+      outline: none;
+      border-color: #00478F;
+      box-shadow: 0 0 0 3px #CCE0F5;
+    }
+
+    input[type="text"] {
+      display: block;
+      width: 100%;
+      padding: 10px 14px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 15px;
+      color: #1A1A1A;
+      background: #fff;
+      border: 1px solid #CCCCCC;
+      border-radius: 4px;
+    }
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #00478F;
+      box-shadow: 0 0 0 3px #CCE0F5;
+    }
+
+    .field { margin-bottom: 20px; }
+
+    .btn-primary {
+      display: block;
+      width: 100%;
+      padding: 12px 20px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      background: #00478F;
+      border: 2px solid #00478F;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+    }
+    .btn-primary:hover { background: #003972; border-color: #003972; }
+    .btn-primary:focus { outline: none; box-shadow: 0 0 0 3px #CCE0F5; }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+      color: #B8B8B8;
+      font-size: 13px;
+    }
+    .divider span:not(.divider-text) { flex: 1; border-top: 1px solid #E5E5E5; }
+
+    .btn-link {
+      background: none;
+      border: none;
+      color: #00478F;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+      display: block;
+      text-align: center;
+      width: 100%;
+    }
+    .btn-link:hover { color: #003972; }
+
+    .hidden { display: none !important; }
+
+    /* Footer */
+    footer {
+      background: #1A1A1A;
+      padding: 20px 32px;
+      flex-shrink: 0;
+    }
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .footer-links a {
+      color: #B8B8B8;
+      font-size: 12px;
+      text-decoration: underline;
+    }
+    .footer-copy {
+      font-size: 12px;
+      color: #767676;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="ontario-header">
+    <picture>
+      <source media="(max-width: 767px)" srcset="/img/ontario-logo--mobile.svg">
+      <img src="/img/ontario-logo-white.svg" alt="Government of Ontario" style="height:30px;width:auto;display:block">
+    </picture>
+  </header>
+
+  <main>
+    <div class="card">
+      <div class="card-dark">
+        <div class="eyebrow">INTERNAL TOOL V0.1</div>
+        <h1>Wordle Wall</h1>
+        <p class="card-dark-tagline">Graham's Wordle Wall, but now it's on the web.</p>
+
+      </div>
+      <div class="card-body">
+      <p class="subtitle" id="subtitle">Sign in to log your score and compare.</p>
+
+      <!-- Returning user: dropdown -->
+      <div id="returning-group">
+        <div class="field">
+          <label for="name-select">Select your name</label>
+          <select id="name-select">
+            <option value="">— Select a team member —</option>
+          </select>
+        </div>
+        <button class="btn-primary" onclick="onContinue()">Continue</button>
+        <div class="divider">
+          <span></span><span class="divider-text">or</span><span></span>
+        </div>
+        <button class="btn-link" id="im-new-btn" onclick="showNew()">I'm new — add me to the team</button>
+      </div>
+
+      <!-- New user: text input -->
+      <div id="new-group" class="hidden">
+        <div class="field">
+          <label for="name-input">Enter your name</label>
+          <input type="text" id="name-input" placeholder="e.g. Taylor Nguyen" autocomplete="off">
+        </div>
+        <button class="btn-primary" onclick="onContinue()">Continue</button>
+        <div class="divider" id="sign-in-divider">
+          <span></span><span class="divider-text">or</span><span></span>
+        </div>
+        <button class="btn-link hidden" id="existing-btn" onclick="showReturning()">Sign in as existing player</button>
+      </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-links">
+      <a href="#">Accessibility</a>
+      <a href="#">Privacy</a>
+      <a href="#">Terms of use</a>
+    </div>
+    <div class="footer-copy">© Mance's Printer for Ontario, 2026</div>
+  </footer>
+
+  <script>
+    let existingUsers = []
+    let currentState = 'returning'
+
+    function titleCase(str) {
+      return str.trim().split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ')
+    }
+
+    function showReturning() {
+      currentState = 'returning'
+      document.getElementById('returning-group').classList.remove('hidden')
+      document.getElementById('new-group').classList.add('hidden')
+      document.getElementById('subtitle').textContent = 'Sign in to log your score and compare.'
+    }
+
+    function showNew() {
+      currentState = 'new'
+      document.getElementById('returning-group').classList.add('hidden')
+      document.getElementById('new-group').classList.remove('hidden')
+      document.getElementById('subtitle').textContent = 'Enter your name to join the team and start tracking your scores.'
+      document.getElementById('name-input').focus()
+      if (existingUsers.length > 0) {
+        document.getElementById('existing-btn').classList.remove('hidden')
+        document.getElementById('sign-in-divider').classList.remove('hidden')
+      } else {
+        document.getElementById('existing-btn').classList.add('hidden')
+        document.getElementById('sign-in-divider').classList.add('hidden')
+      }
+    }
+
+    function onContinue() {
+      let name
+      if (currentState === 'returning') {
+        name = document.getElementById('name-select').value
+        if (!name) { alert('Please select your name.'); return }
+      } else {
+        name = document.getElementById('name-input').value.trim()
+        if (!name) { document.getElementById('name-input').focus(); return }
+      }
+      name = titleCase(name)
+      localStorage.setItem('userName', name)
+      location.href = 'index.html'
+    }
+
+    document.getElementById('name-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') onContinue()
+    })
+
+    async function init() {
+      if (localStorage.getItem('userName')) {
+        location.href = 'index.html'
+        return
+      }
+
+      try {
+        const res = await fetch('/api/users')
+        existingUsers = await res.json()
+      } catch {
+        existingUsers = []
+      }
+
+      if (existingUsers.length > 0) {
+        const sel = document.getElementById('name-select')
+        existingUsers.forEach(name => {
+          const opt = document.createElement('option')
+          opt.value = name
+          opt.textContent = name
+          sel.appendChild(opt)
+        })
+        showReturning()
+      } else {
+        document.getElementById('returning-group').classList.add('hidden')
+        document.getElementById('new-group').classList.remove('hidden')
+        document.getElementById('subtitle').textContent = 'Enter your name to join the team and start tracking your scores.'
+        document.getElementById('sign-in-divider').classList.add('hidden')
+        document.getElementById('existing-btn').classList.add('hidden')
+        document.getElementById('name-input').focus()
+        currentState = 'new'
+      }
+    }
+
+    init()
+  </script>
+</body>
+</html>

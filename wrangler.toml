@@ -1,0 +1,8 @@
+name = "ops-wordle-tracker"
+compatibility_date = "2026-04-25"
+pages_build_output_dir = "public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ops-wordle-db"
+database_id = "2070b924-c939-4ad4-9a0a-dc8f837e9afe"

@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OPS Wordle Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: #F2F2F2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ─────────────────────────────────────── */
+    .ontario-header {
+      background: #1A1A1A;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      flex-shrink: 0;
+    }
+    .header-user {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .header-user span {
+      color: #B8B8B8;
+      font-size: 13px;
+    }
+    .header-user strong { color: #fff; font-weight: 600; }
+    .not-you-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 4px;
+      color: rgba(255,255,255,0.7);
+      font-family: 'Open Sans', sans-serif;
+      font-size: 12px;
+      padding: 5px 12px;
+      cursor: pointer;
+    }
+    .not-you-btn:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+
+    /* ── Sub-header ──────────────────────────────────── */
+    .sub-header {
+      background: #fff;
+      border-bottom: 3px solid #FFAB00;
+      padding: 0 32px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      position: sticky;
+      top: 64px;
+      z-index: 99;
+    }
+    .sub-header-title {
+      font-family: 'Raleway', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      color: #1A1A1A;
+    }
+    .sub-header-date {
+      font-size: 12px;
+      color: #767676;
+    }
+
+    /* ── Main ────────────────────────────────────────── */
+    main {
+      flex: 1;
+      padding: 24px 32px 80px;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* ── Cards ───────────────────────────────────────── */
+    .card {
+      background: #fff;
+      border: 1px solid #E5E5E5;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .card-body { padding: 20px 24px; }
+    .card-head { padding: 16px 24px 0; }
+    .section-title {
+      font-family: 'Raleway', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1A1A1A;
+      margin-bottom: 14px;
+    }
+
+    /* ── Score buttons ───────────────────────────────── */
+    .score-buttons { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .score-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 52px;
+      height: 52px;
+      border-radius: 4px;
+      border: 2px solid;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0 10px;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .score-btn:hover:not(:disabled) { opacity: 0.85; transform: translateY(-1px); }
+    .score-btn:disabled { opacity: 0.45; cursor: default; transform: none; }
+    .score-btn.selected {
+      outline: 3px solid currentColor;
+      outline-offset: 2px;
+    }
+    .reset-link {
+      background: none;
+      border: none;
+      color: #00478F;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 13px;
+      text-decoration: underline;
+      cursor: pointer;
+      padding: 0;
+      margin-top: 10px;
+      display: none;
+    }
+    .reset-link.visible { display: inline; }
+
+    /* ── Week grid ───────────────────────────────────── */
+    .grid-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .grid-table th {
+      padding: 10px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #767676;
+      text-align: center;
+      border-bottom: 2px solid #E5E5E5;
+      background: #F8F8F8;
+    }
+    .grid-table th.col-member { text-align: left; padding-left: 20px; }
+    .grid-table th.col-today { background: #EAF2FB; }
+    .grid-table th.col-avg {
+      background: #F0F0F0;
+      border-left: 3px solid #CCCCCC;
+      color: #4B4B4B;
+    }
+    .grid-table td {
+      text-align: center;
+      padding: 10px 16px;
+      border-bottom: 1px solid #F2F2F2;
+      font-size: 13px;
+    }
+    .grid-table td.col-member {
+      text-align: left;
+      padding-left: 20px;
+      font-weight: 600;
+    }
+    .grid-table td.col-today { background: #EAF2FB; }
+    .grid-table td.col-avg {
+      border-left: 3px solid #CCCCCC;
+      background: #FAFAFA;
+    }
+    .grid-table tr.my-row td { background: #EAF2FB; }
+    .grid-table tr.my-row td.col-today { background: #DCE9F5; }
+    .grid-table tr.my-row td.col-avg { background: #E4EEF7; }
+
+    .day-name { display: block; font-size: 13px; font-weight: 700; color: #1A1A1A; margin-bottom: 1px; }
+    .day-name.today-col { color: #00478F; }
+    .day-date { display: block; font-size: 11px; color: #767676; font-weight: 400; }
+    .today-badge {
+      margin-left: 6px;
+      font-size: 10px;
+      color: #00478F;
+      background: #CCE0F5;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+    .you-label { font-size: 11px; color: #767676; margin-left: 6px; font-weight: 400; }
+
+    .avg-label { display: block; font-size: 13px; font-weight: 700; color: #4B4B4B; margin-bottom: 1px; }
+    .avg-sub { display: block; font-size: 11px; color: #767676; font-weight: 400; }
+
+    .score-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 0 6px;
+    }
+    .avg-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 36px;
+      height: 28px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 0 8px;
+    }
+    .empty-cell { color: #CCCCCC; font-size: 16px; }
+
+    /* ── Past weeks ──────────────────────────────────── */
+    .accordion-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .accordion-header:hover { background: #FAFAFA; }
+    .chevron {
+      transition: transform 0.2s;
+      color: #767676;
+    }
+    .chevron.expanded { transform: rotate(90deg); }
+    .accordion-body { display: none; }
+    .accordion-body.expanded { display: block; }
+    .past-week-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #767676;
+      padding: 10px 20px 6px;
+      border-top: 1px solid #F2F2F2;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── Bottom bar ──────────────────────────────────── */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border-top: 1px solid #E5E5E5;
+      padding: 12px 32px;
+      display: flex;
+      justify-content: flex-end;
+      z-index: 99;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 24px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+      background: #00478F;
+      border: 2px solid #00478F;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-primary:hover { background: #003972; border-color: #003972; }
+
+    /* ── Stats drawer ────────────────────────────────── */
+    #drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.52);
+      z-index: 190;
+      display: none;
+    }
+    #drawer-backdrop.open { display: block; }
+
+    #stats-drawer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 72%;
+      background: #fff;
+      border-radius: 8px 8px 0 0;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.18);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+    }
+    #stats-drawer.open { transform: translateY(0); }
+
+    .drawer-handle {
+      width: 44px;
+      height: 4px;
+      background: #CCCCCC;
+      border-radius: 99px;
+      margin: 12px auto 0;
+      flex-shrink: 0;
+    }
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px 12px;
+      border-bottom: 1px solid #E5E5E5;
+      flex-shrink: 0;
+    }
+    .drawer-title {
+      font-family: 'Raleway', sans-serif;
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #1A1A1A;
+    }
+    .drawer-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #767676;
+      padding: 4px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .drawer-close:hover { background: #F2F2F2; }
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-content: start;
+    }
+    .stat-section {
+      background: #F8F8F8;
+      border: 1px solid #E5E5E5;
+      border-radius: 4px;
+      padding: 16px 20px;
+    }
+    .stat-section.full-width { grid-column: 1 / -1; }
+    .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #767676;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 14px;
+    }
+
+    /* ── Line chart toggle ───────────────────────────── */
+    .chart-toggle {
+      display: flex;
+      gap: 0;
+      margin-bottom: 12px;
+      border: 1px solid #CCCCCC;
+      border-radius: 4px;
+      overflow: hidden;
+      width: fit-content;
+    }
+    .toggle-btn {
+      background: #fff;
+      border: none;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: #767676;
+      padding: 5px 14px;
+      cursor: pointer;
+    }
+    .toggle-btn + .toggle-btn { border-left: 1px solid #CCCCCC; }
+    .toggle-btn.active {
+      background: #00478F;
+      color: #fff;
+    }
+    .toggle-btn:hover:not(.active) { background: #F2F2F2; }
+
+    /* ── Leaderboard ─────────────────────────────────── */
+    .lb-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .lb-table th {
+      font-size: 11px;
+      font-weight: 600;
+      color: #767676;
+      padding: 6px 10px;
+      border-bottom: 2px solid #E5E5E5;
+      font-family: 'Open Sans', sans-serif;
+    }
+    .lb-table th:first-child { text-align: center; }
+    .lb-table th:nth-child(2) { text-align: left; }
+    .lb-table th:nth-child(3), .lb-table th:nth-child(4) { text-align: right; }
+    .lb-table td {
+      padding: 7px 10px;
+      border-bottom: 1px solid #F2F2F2;
+      font-size: 13px;
+      font-family: 'Open Sans', sans-serif;
+    }
+    .lb-table td:first-child { text-align: center; }
+    .lb-table td:nth-child(2) { text-align: left; }
+    .lb-table td:nth-child(3), .lb-table td:nth-child(4) { text-align: right; }
+    .rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    @media (max-width: 700px) {
+      main { padding: 16px 16px 80px; }
+      .ontario-header { padding: 0 16px; }
+      .sub-header { padding: 0 16px; }
+      .drawer-body { grid-template-columns: 1fr; }
+      .stat-section.full-width { grid-column: 1; }
+      .bottom-bar { padding: 12px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="ontario-header">
+    <picture>
+      <source media="(max-width: 767px)" srcset="/img/ontario-logo--mobile.svg">
+      <img src="/img/ontario-logo-white.svg" alt="Government of Ontario" style="height:30px;width:auto;display:block">
+    </picture>
+    <div class="header-user">
+      <span>Welcome, <strong id="header-name"></strong></span>
+      <button class="not-you-btn" onclick="signOut()">Not you?</button>
+    </div>
+  </header>
+
+  <!-- Sub-header -->
+  <div class="sub-header">
+    <span class="sub-header-title">Graham's Wordle Wall, but now it's on the web.</span>
+    <span class="sub-header-date" id="current-date"></span>
+  </div>
+
+  <!-- Main content -->
+  <main>
+
+    <!-- Score submission -->
+    <div class="card card-body">
+      <h2 class="section-title">Your score for today</h2>
+      <div class="score-buttons" id="score-buttons">
+        <button class="score-btn" data-score="1" style="background:#E8F5E9;color:#1B5E20;border-color:#1B5E20" onclick="submitScore('1')">1</button>
+        <button class="score-btn" data-score="2" style="background:#E8F5E9;color:#2E7D32;border-color:#2E7D32" onclick="submitScore('2')">2</button>
+        <button class="score-btn" data-score="3" style="background:#FFF3E0;color:#E65100;border-color:#E65100" onclick="submitScore('3')">3</button>
+        <button class="score-btn" data-score="4" style="background:#FFF3E0;color:#EF6C00;border-color:#EF6C00" onclick="submitScore('4')">4</button>
+        <button class="score-btn" data-score="5" style="background:#F5F5F5;color:#757575;border-color:#CCCCCC" onclick="submitScore('5')">5</button>
+        <button class="score-btn" data-score="FAILURE" style="background:#FFEBEE;color:#C62828;border-color:#C62828;min-width:80px;font-size:13px" onclick="submitScore('FAILURE')">Failure</button>
+      </div>
+      <button class="reset-link" id="reset-btn" onclick="resetScore()">Reset my score for today</button>
+    </div>
+
+    <!-- Week grid -->
+    <div class="card">
+      <div class="card-head">
+        <h2 class="section-title">This week</h2>
+      </div>
+      <div id="week-grid-container"></div>
+    </div>
+
+    <!-- Past weeks accordion -->
+    <div class="card">
+      <div class="accordion-header" onclick="togglePastWeeks()">
+        <h2 class="section-title" style="margin-bottom:0">Past weeks</h2>
+        <svg class="chevron" id="past-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M6 4l4 4-4 4" stroke="#767676" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="accordion-body" id="past-weeks-body"></div>
+    </div>
+
+  </main>
+
+  <!-- Bottom bar -->
+  <div class="bottom-bar">
+    <button class="btn-primary" onclick="openDrawer()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="2" y="10" width="2" height="4" rx="1" fill="white"/>
+        <rect x="7" y="6" width="2" height="8" rx="1" fill="white"/>
+        <rect x="12" y="2" width="2" height="12" rx="1" fill="white"/>
+      </svg>
+      View stats
+    </button>
+  </div>
+
+  <!-- Drawer backdrop -->
+  <div id="drawer-backdrop" onclick="closeDrawer()"></div>
+
+  <!-- Stats drawer -->
+  <div id="stats-drawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-header">
+      <span class="drawer-title">Team stats</span>
+      <button class="drawer-close" onclick="closeDrawer()">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M5 5l10 10M15 5L5 15" stroke="#767676" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="drawer-body">
+      <div class="stat-section">
+        <div class="stat-label">All-time average score</div>
+        <canvas id="bar-chart"></canvas>
+      </div>
+      <div class="stat-section">
+        <div class="stat-label">Score trends over time</div>
+        <div class="chart-toggle">
+          <button class="toggle-btn active" id="toggle-daily" onclick="setChartMode('daily')">Daily</button>
+          <button class="toggle-btn" id="toggle-weekly" onclick="setChartMode('weekly')">Weekly</button>
+        </div>
+        <canvas id="line-chart"></canvas>
+      </div>
+      <div class="stat-section full-width">
+        <div class="stat-label">Leaderboard — lower is better</div>
+        <table class="lb-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Member</th>
+              <th>Avg score</th>
+              <th>Games played</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── State ─────────────────────────────────────────────
+    let userName = ''
+    let weekScores = []
+    let allScores = []
+    let barChart = null
+    let lineChart = null
+    let chartMode = 'daily'
+    let chartsInitialized = false
+
+    const PERSON_COLORS = ['#00478F', '#1B5E20', '#E65100', '#551A8B', '#C62828', '#006064', '#E91E63', '#37474F']
+
+    // ── Helpers ───────────────────────────────────────────
+    function titleCase(str) {
+      return str.trim().split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ')
+    }
+
+    function getMondayOf(isoDate) {
+      const d = new Date(isoDate + 'T00:00:00')
+      const dow = d.getDay()
+      const offset = dow === 0 ? -6 : 1 - dow
+      d.setDate(d.getDate() + offset)
+      return d.toISOString().slice(0, 10)
+    }
+
+    function getWeekDates(mondayISO) {
+      const dates = []
+      for (let i = 0; i < 5; i++) {
+        const d = new Date(mondayISO + 'T00:00:00')
+        d.setDate(d.getDate() + i)
+        dates.push(d.toISOString().slice(0, 10))
+      }
+      return dates
+    }
+
+    function formatDateShort(isoDate) {
+      const d = new Date(isoDate + 'T00:00:00')
+      return d.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' })
+    }
+
+    function formatDateFull(isoDate) {
+      const d = new Date(isoDate + 'T00:00:00')
+      return d.toLocaleDateString('en-CA', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
+    }
+
+    function scoreToNum(score) {
+      return score === 'FAILURE' ? 6 : parseInt(score, 10)
+    }
+
+    function scoreChipStyle(score) {
+      if (score === 'FAILURE') return 'background:#FFEBEE;color:#C62828'
+      const n = parseInt(score, 10)
+      if (n <= 2) return `background:#E8F5E9;color:${n === 1 ? '#1B5E20' : '#2E7D32'}`
+      if (n <= 4) return `background:#FFF3E0;color:${n === 3 ? '#E65100' : '#EF6C00'}`
+      return 'background:#F5F5F5;color:#757575'
+    }
+
+    function avgChipStyle(avg) {
+      if (avg <= 2.5) return 'background:#E8F5E9;color:#1B5E20'
+      if (avg <= 4.0) return 'background:#FFF3E0;color:#E65100'
+      return 'background:#FFEBEE;color:#C62828'
+    }
+
+    function today() {
+      return new Date().toISOString().slice(0, 10)
+    }
+
+    function dayLabel(isoDate) {
+      const d = new Date(isoDate + 'T00:00:00')
+      return d.toLocaleDateString('en-CA', { weekday: 'short' })
+    }
+
+    // ── Sign out ──────────────────────────────────────────
+    function signOut() {
+      localStorage.removeItem('userName')
+      location.href = 'welcome.html'
+    }
+
+    // ── Score submission ──────────────────────────────────
+    async function submitScore(score) {
+      const res = await fetch('/api/score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: userName, score })
+      })
+      if (res.ok) {
+        await refreshData()
+      }
+    }
+
+    async function resetScore() {
+      const res = await fetch('/api/score', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: userName })
+      })
+      if (res.ok) {
+        await refreshData()
+      }
+    }
+
+    function renderScoreButtons() {
+      const todayISO = today()
+      const myScore = weekScores.find(s => s.name === userName && s.date === todayISO)
+      const btns = document.querySelectorAll('.score-btn')
+      const resetBtn = document.getElementById('reset-btn')
+
+      if (myScore) {
+        btns.forEach(btn => {
+          btn.disabled = true
+          btn.classList.toggle('selected', btn.dataset.score === myScore.score)
+        })
+        resetBtn.classList.add('visible')
+      } else {
+        btns.forEach(btn => {
+          btn.disabled = false
+          btn.classList.remove('selected')
+        })
+        resetBtn.classList.remove('visible')
+      }
+    }
+
+    // ── Week grid ─────────────────────────────────────────
+    function buildWeekGrid(scores, mondayISO, todayISO, showYou) {
+      const weekDates = getWeekDates(mondayISO)
+      const names = [...new Set(scores.map(s => s.name))].sort()
+
+      if (names.length === 0) {
+        return '<p style="padding:20px 24px;color:#767676;font-size:14px">No scores yet this week.</p>'
+      }
+
+      const scoreMap = {}
+      scores.forEach(s => {
+        if (!scoreMap[s.name]) scoreMap[s.name] = {}
+        scoreMap[s.name][s.date] = s.score
+      })
+
+      let html = '<table class="grid-table"><thead><tr>'
+      html += '<th class="col-member">Member</th>'
+
+      weekDates.forEach(date => {
+        const isToday = date === todayISO
+        html += `<th class="${isToday ? 'col-today' : ''}">`
+        html += `<span class="day-name${isToday ? ' today-col' : ''}">${dayLabel(date)}`
+        if (isToday) html += '<span class="today-badge">Today</span>'
+        html += '</span>'
+        html += `<span class="day-date">${formatDateShort(date)}</span>`
+        html += '</th>'
+      })
+
+      html += '<th class="col-avg"><span class="avg-label">Wk avg</span><span class="avg-sub">Mon–today</span></th>'
+      html += '</tr></thead><tbody>'
+
+      names.forEach(name => {
+        const isMe = showYou && name === userName
+        html += `<tr class="${isMe ? 'my-row' : ''}">`
+        html += `<td class="col-member">${name}`
+        if (isMe) html += '<span class="you-label">(you)</span>'
+        html += '</td>'
+
+        let vals = []
+        weekDates.forEach(date => {
+          const isToday = date === todayISO
+          const score = scoreMap[name] && scoreMap[name][date]
+          html += `<td class="${isToday ? 'col-today' : ''}">`
+          if (score) {
+            html += `<span class="score-chip" style="${scoreChipStyle(score)}">${score === 'FAILURE' ? 'F' : score}</span>`
+            vals.push(scoreToNum(score))
+          } else {
+            html += '<span class="empty-cell">–</span>'
+          }
+          html += '</td>'
+        })
+
+        html += '<td class="col-avg">'
+        if (vals.length > 0) {
+          const avg = vals.reduce((a, b) => a + b, 0) / vals.length
+          html += `<span class="avg-chip" style="${avgChipStyle(avg)}">${avg.toFixed(1)}</span>`
+        } else {
+          html += '<span class="empty-cell">–</span>'
+        }
+        html += '</td></tr>'
+      })
+
+      html += '</tbody></table>'
+      return html
+    }
+
+    function renderWeekGrid() {
+      const todayISO = today()
+      const mondayISO = getMondayOf(todayISO)
+      const container = document.getElementById('week-grid-container')
+      container.innerHTML = buildWeekGrid(weekScores, mondayISO, todayISO, true)
+    }
+
+    // ── Past weeks ────────────────────────────────────────
+    function renderPastWeeks() {
+      const todayISO = today()
+      const currentMonday = getMondayOf(todayISO)
+      const body = document.getElementById('past-weeks-body')
+
+      const weekMap = {}
+      allScores.forEach(s => {
+        const mon = getMondayOf(s.date)
+        if (mon >= currentMonday) return
+        if (!weekMap[mon]) weekMap[mon] = []
+        weekMap[mon].push(s)
+      })
+
+      const pastMondays = Object.keys(weekMap).sort().reverse()
+
+      if (pastMondays.length === 0) {
+        body.innerHTML = '<p style="padding:16px 24px;color:#767676;font-size:14px">No past weeks yet.</p>'
+        return
+      }
+
+      let html = ''
+      pastMondays.forEach(mon => {
+        const friDate = new Date(mon + 'T00:00:00')
+        friDate.setDate(friDate.getDate() + 4)
+        const fri = friDate.toISOString().slice(0, 10)
+        html += `<div class="past-week-label">Week of ${formatDateShort(mon)}</div>`
+        html += buildWeekGrid(weekMap[mon], mon, fri, false)
+      })
+      body.innerHTML = html
+    }
+
+    function togglePastWeeks() {
+      const body = document.getElementById('past-weeks-body')
+      const chevron = document.getElementById('past-chevron')
+      body.classList.toggle('expanded')
+      chevron.classList.toggle('expanded')
+    }
+
+    // ── Stats drawer ──────────────────────────────────────
+    function openDrawer() {
+      document.getElementById('stats-drawer').classList.add('open')
+      document.getElementById('drawer-backdrop').classList.add('open')
+      if (!chartsInitialized) {
+        initCharts()
+        chartsInitialized = true
+      } else {
+        updateCharts()
+      }
+    }
+
+    function closeDrawer() {
+      document.getElementById('stats-drawer').classList.remove('open')
+      document.getElementById('drawer-backdrop').classList.remove('open')
+    }
+
+    function computePersonStats() {
+      const stats = {}
+      allScores.forEach(s => {
+        if (!stats[s.name]) stats[s.name] = { total: 0, count: 0 }
+        stats[s.name].total += scoreToNum(s.score)
+        stats[s.name].count++
+      })
+      return Object.entries(stats)
+        .map(([name, { total, count }]) => ({ name, avg: total / count, count }))
+        .sort((a, b) => a.avg - b.avg)
+    }
+
+    function initCharts() {
+      const personStats = computePersonStats()
+
+      // Bar chart
+      const barCtx = document.getElementById('bar-chart').getContext('2d')
+      const barColors = personStats.map(p => p.avg <= 2 ? '#2E7D32' : p.avg <= 3.5 ? '#EF6C00' : '#C62828')
+      barChart = new Chart(barCtx, {
+        type: 'bar',
+        data: {
+          labels: personStats.map(p => p.name.split(' ')[0]),
+          datasets: [{
+            data: personStats.map(p => +p.avg.toFixed(2)),
+            backgroundColor: barColors,
+            borderRadius: 3,
+          }]
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: {
+            y: {
+              min: 1, max: 6,
+              ticks: { stepSize: 1, font: { size: 10, family: 'Open Sans' } },
+              grid: { color: '#E5E5E5' }
+            },
+            x: { ticks: { font: { size: 10, family: 'Open Sans' } }, grid: { display: false } }
+          },
+          maintainAspectRatio: true,
+          aspectRatio: 2,
+        }
+      })
+
+      // Line chart
+      const lineCtx = document.getElementById('line-chart').getContext('2d')
+      const lineData = buildLineChartData(chartMode)
+      lineChart = new Chart(lineCtx, {
+        type: 'line',
+        data: lineData,
+        options: lineChartOptions()
+      })
+
+      // Leaderboard
+      renderLeaderboard(personStats)
+    }
+
+    function lineChartOptions() {
+      return {
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { font: { size: 10, family: 'Open Sans' }, boxWidth: 12, padding: 8 }
+          }
+        },
+        scales: {
+          y: {
+            min: 1, max: 6,
+            ticks: { stepSize: 1, font: { size: 10, family: 'Open Sans' } },
+            grid: { color: '#E5E5E5' }
+          },
+          x: {
+            ticks: { font: { size: 10, family: 'Open Sans' }, maxRotation: 45 },
+            grid: { display: false }
+          }
+        },
+        elements: { point: { radius: 3 }, line: { tension: 0.3 } },
+        spanGaps: false,
+        maintainAspectRatio: true,
+        aspectRatio: 1.8,
+      }
+    }
+
+    function buildLineChartData(mode) {
+      const names = [...new Set(allScores.map(s => s.name))].sort()
+
+      if (mode === 'daily') {
+        const dates = [...new Set(allScores.map(s => s.date))].sort()
+        const scoreByNameDate = {}
+        allScores.forEach(s => {
+          if (!scoreByNameDate[s.name]) scoreByNameDate[s.name] = {}
+          scoreByNameDate[s.name][s.date] = scoreToNum(s.score)
+        })
+        return {
+          labels: dates.map(formatDateShort),
+          datasets: names.map((name, i) => ({
+            label: name,
+            data: dates.map(d => scoreByNameDate[name] ? (scoreByNameDate[name][d] ?? null) : null),
+            borderColor: PERSON_COLORS[i % PERSON_COLORS.length],
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            pointBackgroundColor: PERSON_COLORS[i % PERSON_COLORS.length],
+          }))
+        }
+      } else {
+        // Weekly: group by Monday
+        const weekMap = {}
+        allScores.forEach(s => {
+          const mon = getMondayOf(s.date)
+          if (!weekMap[mon]) weekMap[mon] = {}
+          if (!weekMap[mon][s.name]) weekMap[mon][s.name] = []
+          weekMap[mon][s.name].push(scoreToNum(s.score))
+        })
+        const weeks = Object.keys(weekMap).sort()
+        return {
+          labels: weeks.map(formatDateShort),
+          datasets: names.map((name, i) => ({
+            label: name,
+            data: weeks.map(w => {
+              const vals = weekMap[w] && weekMap[w][name]
+              if (!vals || !vals.length) return null
+              return +(vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(2)
+            }),
+            borderColor: PERSON_COLORS[i % PERSON_COLORS.length],
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            pointBackgroundColor: PERSON_COLORS[i % PERSON_COLORS.length],
+          }))
+        }
+      }
+    }
+
+    function setChartMode(mode) {
+      chartMode = mode
+      document.getElementById('toggle-daily').classList.toggle('active', mode === 'daily')
+      document.getElementById('toggle-weekly').classList.toggle('active', mode === 'weekly')
+      if (lineChart) {
+        const data = buildLineChartData(mode)
+        lineChart.data = data
+        lineChart.update()
+      }
+    }
+
+    function updateCharts() {
+      if (!barChart || !lineChart) return
+      const personStats = computePersonStats()
+      const barColors = personStats.map(p => p.avg <= 2 ? '#2E7D32' : p.avg <= 3.5 ? '#EF6C00' : '#C62828')
+      barChart.data.labels = personStats.map(p => p.name.split(' ')[0])
+      barChart.data.datasets[0].data = personStats.map(p => +p.avg.toFixed(2))
+      barChart.data.datasets[0].backgroundColor = barColors
+      barChart.update()
+      const lineData = buildLineChartData(chartMode)
+      lineChart.data = lineData
+      lineChart.update()
+      renderLeaderboard(personStats)
+    }
+
+    function renderLeaderboard(personStats) {
+      const rankStyle = (i) => {
+        if (i === 0) return 'background:#FFF9C4;color:#F9A825'
+        if (i === 1) return 'background:#F5F5F5;color:#757575'
+        if (i === 2) return 'background:#FBE9E7;color:#BF360C'
+        return ''
+      }
+      const tbody = document.getElementById('leaderboard-body')
+      tbody.innerHTML = personStats.map((p, i) => {
+        const rankHtml = i < 3
+          ? `<span class="rank-badge" style="${rankStyle(i)}">${i + 1}</span>`
+          : `<span style="color:#767676;font-size:12px">${i + 1}</span>`
+        const nameStyle = i === 0 ? 'font-weight:700;color:#1B5E20' : 'color:#1A1A1A'
+        const avgStyle = p.avg <= 2.5 ? 'color:#1B5E20;font-weight:700' : p.avg <= 3.5 ? 'color:#E65100;font-weight:700' : 'color:#C62828;font-weight:700'
+        return `<tr>
+          <td>${rankHtml}</td>
+          <td style="${nameStyle}">${p.name}</td>
+          <td style="${avgStyle}">${p.avg.toFixed(1)}</td>
+          <td style="color:#767676">${p.count}</td>
+        </tr>`
+      }).join('')
+    }
+
+    // ── Data loading ──────────────────────────────────────
+    async function refreshData() {
+      const todayISO = today()
+      const mondayISO = getMondayOf(todayISO)
+      const friDate = new Date(mondayISO + 'T00:00:00')
+      friDate.setDate(friDate.getDate() + 4)
+
+      const [weekRes, allRes] = await Promise.all([
+        fetch('/api/scores/week'),
+        fetch('/api/scores/all')
+      ])
+      weekScores = await weekRes.json()
+      allScores = await allRes.json()
+
+      renderScoreButtons()
+      renderWeekGrid()
+      renderPastWeeks()
+
+      if (chartsInitialized) {
+        updateCharts()
+      }
+    }
+
+    // ── Init ──────────────────────────────────────────────
+    function init() {
+      userName = localStorage.getItem('userName')
+      if (!userName) {
+        location.href = 'welcome.html'
+        return
+      }
+
+      document.getElementById('header-name').textContent = userName
+      document.getElementById('current-date').textContent = formatDateFull(today())
+
+      refreshData()
+    }
+
+    init()
+  </script>
+</body>
+</html>
