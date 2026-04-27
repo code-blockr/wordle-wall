@@ -471,6 +471,7 @@
         <button class="score-btn" data-score="3" style="background:#FFF3E0;color:#E65100;border-color:#E65100" onclick="submitScore('3')">3</button>
         <button class="score-btn" data-score="4" style="background:#FFF3E0;color:#EF6C00;border-color:#EF6C00" onclick="submitScore('4')">4</button>
         <button class="score-btn" data-score="5" style="background:#F5F5F5;color:#757575;border-color:#CCCCCC" onclick="submitScore('5')">5</button>
+        <button class="score-btn" data-score="6" style="background:#F5F5F5;color:#757575;border-color:#CCCCCC" onclick="submitScore('6')">6</button>
         <button class="score-btn" data-score="FAILURE" style="background:#FFEBEE;color:#C62828;border-color:#C62828;min-width:80px;font-size:13px" onclick="submitScore('FAILURE')">Failure</button>
       </div>
       <button class="reset-link" id="reset-btn" onclick="resetScore()">Reset my score for today</button>
@@ -599,7 +600,7 @@
     }
 
     function scoreToNum(score) {
-      return score === 'FAILURE' ? 6 : parseInt(score, 10)
+      return score === 'FAILURE' ? 7 : parseInt(score, 10)
     }
 
     function scoreChipStyle(score) {
@@ -836,7 +837,7 @@
           plugins: { legend: { display: false } },
           scales: {
             y: {
-              min: 1, max: 6,
+              min: 1, max: 7,
               ticks: { stepSize: 1, font: { size: 10, family: 'Open Sans' } },
               grid: { color: '#E5E5E5' }
             },
@@ -870,7 +871,7 @@
         },
         scales: {
           y: {
-            min: 1, max: 6,
+            min: 1, max: 7,
             ticks: { stepSize: 1, font: { size: 10, family: 'Open Sans' } },
             grid: { color: '#E5E5E5' }
           },

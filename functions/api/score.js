@@ -24,7 +24,7 @@ export async function onRequestPost({ request, env }) {
   try { body = await request.json() } catch { return json({ error: 'Invalid JSON' }, 400) }
   const { name, score } = body
   if (!name || !score) return json({ error: 'name and score required' }, 400)
-  if (!['1', '2', '3', '4', '5', 'FAILURE'].includes(String(score))) {
+  if (!['1', '2', '3', '4', '5', '6', 'FAILURE'].includes(String(score))) {
     return json({ error: 'invalid score' }, 400)
   }
   const normalName = titleCase(name)
