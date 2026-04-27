@@ -129,6 +129,11 @@ The Worker deploys automatically as part of the Pages project via the `functions
 
 ## Notes
 
-- No auth. It's an internal team thing, everyone knows who submitted what. If someone logs a 1 and they definitely got a 4, that's on them.
+- No auth. It's an internal team thing, everyone knows who submitted what. If someone logs a 1 and they definitely got a 4, that's on them. Might put a simple password for all users using this if we want to restrict this.
 - Week boundaries are Mon–Fri. Weekends are for spending time with your family and training for the days ahead.
 - The `welcome.html` redirect logic runs on page load via `localStorage` — if your name's saved, you skip straight to the main view.
+
+---
+
+## #TODO
+
