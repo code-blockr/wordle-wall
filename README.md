@@ -21,12 +21,15 @@ This was good practice with using Cloudflare for me since I haven't really prope
 ## Features
 
 ### Welcome screen (`welcome.html`)
-First time you open it, you get a name entry screen. If there are already users in the DB (which now there are), it shows a dropdown of existing names, pick yours and go. If it's your first time to the site, you can hit "I'm new" and type your name in. Name gets title-cased on save, so it'll match your history no matter what device you're on if you come back, don't use the dropdown and for some reason try to enter your name again and are lazy or inconsistent.
+First time you open it, you get a name entry screen. If there are already users in the DB (which now there are), it shows a dropdown of existing names, pick yours and go. If it's your first time to the site, you can hit "I'm new" and type your name in. Name gets title-cased on save, so it'll match your history no matter what device you're on if you come back, don't use the dropdown and for some reason try to enter your name again and are lazy or inconsistent. That last part might have been some overcorrection on my part.
 
-That last part might have been some overcorrection on my part.
+There's also basic HTML santization now; converting `<>`, `&` and `''` into their harmless counterparts before submitting. 
+
+Also added a general password for people as a bit of a speedbump for anyone who might stumble upon the site. It's client-side though, so anyone who knows how to inspect a site will be able to find it pretty quickly. 
+
 
 ### Score submission (`index.html`)
-Six buttons: `1` through `5` and `FAILURE`. Color-coded (bad scores are red). One score per person per day, restricted at the DB level. You can reset your score for the current day if you fat-fingered it or whatever.
+Six buttons: `1` through `6` and `FAILURE`. Color-coded (bad scores are red). One score per person per day, restricted at the DB level. You can reset your score for the current day if you fat-fingered it or whatever.
 
 ### Current week grid
 Shows the Mon–Fri grid for the current week, one row per team member who has any score this week. Empty cells for days not yet submitted. Updates in real time as people log in.
@@ -138,3 +141,4 @@ The Worker deploys automatically as part of the Pages project via the `functions
 ## #TODO
 
 - may need to remove ontario branding since this isn't officially related to ontario lol
+- may add tabs for the stats window/modal to improve viewing experience
