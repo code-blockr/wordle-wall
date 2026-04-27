@@ -1,4 +1,4 @@
-# OPS Wordle Tracker
+# Digital Wordle Wall
 
 A lightweight internal tool for current and former OBEB people to continue logging and comparing our daily Wordle scores. Pretty simple little mini project I got an idea for when Graham tried to share his wordle scores with us in a teams chat and I thought that there's gotta be a better way to do this. 
 
