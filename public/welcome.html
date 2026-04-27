@@ -117,7 +117,8 @@
       box-shadow: 0 0 0 3px #CCE0F5;
     }
 
-    input[type="text"] {
+    input[type="text"],
+    input[type="password"] {
       display: block;
       width: 100%;
       padding: 10px 14px;
@@ -128,7 +129,8 @@
       border: 1px solid #CCCCCC;
       border-radius: 4px;
     }
-    input[type="text"]:focus {
+    input[type="text"]:focus,
+    input[type="password"]:focus {
       outline: none;
       border-color: #00478F;
       box-shadow: 0 0 0 3px #CCE0F5;
@@ -232,6 +234,10 @@
             <option value="">— Select a team member —</option>
           </select>
         </div>
+        <div class="field">
+          <label for="password-returning">Secret Password</label>
+          <input type="password" id="password-returning" placeholder="Password" autocomplete="off">
+        </div>
         <button class="btn-primary" onclick="onContinue()">Continue</button>
         <div class="divider">
           <span></span><span class="divider-text">or</span><span></span>
@@ -244,6 +250,10 @@
         <div class="field">
           <label for="name-input">Enter your name</label>
           <input type="text" id="name-input" placeholder="e.g. Taylor Nguyen" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="password-new">Secret Password</label>
+          <input type="password" id="password-new" placeholder="If you know you know." autocomplete="off">
         </div>
         <button class="btn-primary" onclick="onContinue()">Continue</button>
         <div class="divider" id="sign-in-divider">
@@ -299,16 +309,37 @@
       if (currentState === 'returning') {
         name = document.getElementById('name-select').value
         if (!name) { alert('Please select your name.'); return }
+        const pwReturning = document.getElementById('password-returning')
+        if (!pwReturning.value) { pwReturning.focus(); return }
+        if (pwReturning.value !== 'obeb') { alert('Incorrect password.'); return }
       } else {
         name = document.getElementById('name-input').value.trim()
         if (!name) { document.getElementById('name-input').focus(); return }
+        const pwNew = document.getElementById('password-new')
+        if (!pwNew.value) { pwNew.focus(); return }
+        if (pwNew.value !== 'obeb') { alert('Incorrect password.'); return
+        }
       }
       name = titleCase(name)
+      if (name.length > 20) {
+        alert('Name must be 20 characters or fewer.')
+        return
+      }
+      if (!/^[A-Za-z\s'-]+$/.test(name)) {
+        alert("Name can only contain letters, spaces, hyphens, and apostrophes.")
+        return
+      }
       localStorage.setItem('userName', name)
       location.href = 'index.html'
     }
 
     document.getElementById('name-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') onContinue()
+    })
+    document.getElementById('password-returning').addEventListener('keydown', e => {
+      if (e.key === 'Enter') onContinue()
+    })
+    document.getElementById('password-new').addEventListener('keydown', e => {
       if (e.key === 'Enter') onContinue()
     })
 

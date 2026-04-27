@@ -555,6 +555,15 @@
   </div>
 
   <script>
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+    }
+
     // ── State ─────────────────────────────────────────────
     let userName = ''
     let weekScores = []
@@ -710,7 +719,7 @@
       names.forEach(name => {
         const isMe = showYou && name === userName
         html += `<tr class="${isMe ? 'my-row' : ''}">`
-        html += `<td class="col-member">${name}`
+        html += `<td class="col-member">${escapeHtml(name)}`
         if (isMe) html += '<span class="you-label">(you)</span>'
         html += '</td>'
 
@@ -720,7 +729,7 @@
           const score = scoreMap[name] && scoreMap[name][date]
           html += `<td class="${isToday ? 'col-today' : ''}">`
           if (score) {
-            html += `<span class="score-chip" style="${scoreChipStyle(score)}">${score === 'FAILURE' ? 'F' : score}</span>`
+            html += `<span class="score-chip" style="${scoreChipStyle(score)}">${escapeHtml(score === 'FAILURE' ? 'F' : score)}</span>`
             vals.push(scoreToNum(score))
           } else {
             html += '<span class="empty-cell">–</span>'
@@ -977,7 +986,7 @@
         const avgStyle = p.avg <= 2.5 ? 'color:#1B5E20;font-weight:700' : p.avg <= 3.5 ? 'color:#E65100;font-weight:700' : 'color:#C62828;font-weight:700'
         return `<tr>
           <td>${rankHtml}</td>
-          <td style="${nameStyle}">${p.name}</td>
+          <td style="${nameStyle}">${escapeHtml(p.name)}</td>
           <td style="${avgStyle}">${p.avg.toFixed(1)}</td>
           <td style="color:#767676">${p.count}</td>
         </tr>`
