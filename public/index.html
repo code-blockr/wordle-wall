@@ -525,18 +525,6 @@
       </button>
     </div>
     <div class="drawer-body">
-      <div class="stat-section">
-        <div class="stat-label">All-time average score</div>
-        <canvas id="bar-chart"></canvas>
-      </div>
-      <div class="stat-section">
-        <div class="stat-label">Score trends over time</div>
-        <div class="chart-toggle">
-          <button class="toggle-btn active" id="toggle-daily" onclick="setChartMode('daily')">Daily</button>
-          <button class="toggle-btn" id="toggle-weekly" onclick="setChartMode('weekly')">Weekly</button>
-        </div>
-        <canvas id="line-chart"></canvas>
-      </div>
       <div class="stat-section full-width">
         <div class="stat-label">Leaderboard — lower is better</div>
         <table class="lb-table">
@@ -550,6 +538,18 @@
           </thead>
           <tbody id="leaderboard-body"></tbody>
         </table>
+      </div>
+      <div class="stat-section">
+        <div class="stat-label">All-time average score</div>
+        <canvas id="bar-chart"></canvas>
+      </div>
+      <div class="stat-section">
+        <div class="stat-label">Score trends over time</div>
+        <div class="chart-toggle">
+          <button class="toggle-btn active" id="toggle-daily" onclick="setChartMode('daily')">Daily</button>
+          <button class="toggle-btn" id="toggle-weekly" onclick="setChartMode('weekly')">Weekly</button>
+        </div>
+        <canvas id="line-chart"></canvas>
       </div>
     </div>
   </div>
@@ -831,7 +831,8 @@
 
       // Bar chart
       const barCtx = document.getElementById('bar-chart').getContext('2d')
-      const barColors = personStats.map(p => p.avg <= 2 ? '#2E7D32' : p.avg <= 3.5 ? '#EF6C00' : '#C62828')
+      const sortedNames = [...new Set(allScores.map(s => s.name))].sort()
+      const barColors = personStats.map(p => PERSON_COLORS[sortedNames.indexOf(p.name) % PERSON_COLORS.length])
       barChart = new Chart(barCtx, {
         type: 'bar',
         data: {
@@ -959,7 +960,8 @@
     function updateCharts() {
       if (!barChart || !lineChart) return
       const personStats = computePersonStats()
-      const barColors = personStats.map(p => p.avg <= 2 ? '#2E7D32' : p.avg <= 3.5 ? '#EF6C00' : '#C62828')
+      const sortedNames = [...new Set(allScores.map(s => s.name))].sort()
+      const barColors = personStats.map(p => PERSON_COLORS[sortedNames.indexOf(p.name) % PERSON_COLORS.length])
       barChart.data.labels = personStats.map(p => p.name.split(' ')[0])
       barChart.data.datasets[0].data = personStats.map(p => +p.avg.toFixed(2))
       barChart.data.datasets[0].backgroundColor = barColors
