@@ -29,21 +29,25 @@ Also added a general password for people as a bit of a speedbump for anyone who 
 
 
 ### Score submission (`index.html`)
-Six buttons: `1` through `6` and `FAILURE`. Color-coded (bad scores are red). One score per person per day, restricted at the DB level. You can reset your score for the current day if you fat-fingered it or whatever.
+Six buttons: `1` through `6` and `FAILURE`. Color-coded (bad scores are red). One score per person per day, restricted at the DB level. You can reset your score for the day if you fat-fingered it or whatever.
+
+You can also click any day in the current week's grid to enter or update a score for that day retroactively — useful if you forgot to log Tuesday's score. The score card title updates to reflect whichever day you've got selected.
+
+There's also a "Paste Wordle Share Card" button that opens a modal where you can paste in the share text straight from the NYT app. It parses the score automatically, validates that the Wordle number matches the selected date (using the June 20, 2021 epoch), and submits with one click. Escape to close, Enter to submit once a valid result is detected.
+
+If you haven't logged a score yet for the day, there's a direct link to the NYT Wordle below the buttons so you don't have to go hunting for it.
 
 ### Current week grid
-Shows the Mon–Fri grid for the current week, one row per team member who has any score this week. Empty cells for days not yet submitted. Updates in real time as people log in.
+Shows the Mon–Fri grid for the current week, one row per team member who has any score this week. Empty cells for days not yet submitted. Clicking a column header or your own cell selects that day for score entry.
 
-### History
-All past weeks are there, collapsed by default. Same grid format, read-only. Will have to wait a week to test this since I was too lazy to enter in test data.
+### Leaderboard
+Always visible below the week grid. Ranked by all-time average score, lower is better. FAILURE counts as 7 for the math. Updates whenever scores are refreshed.
 
-### Stats drawer
-Slides up from the bottom. Has:
+### View Stats
+An accordion below the leaderboard. Has:
 - Bar chart: all-time average score per person
-- Line chart: score trend over time by date
-- Leaderboard: ranked by average (lower = better), FAILURE counts as 6 for the math
-
-Might need to rearrange the charts or add a tab button at the top so that people don't miss the some of the charts that you need to scroll down to see.
+- Line chart: score trend over time, daily or weekly toggle
+- Past weeks: all previous Mon–Fri grids, read-only, nested inside the accordion
 
 ---
 
@@ -69,8 +73,8 @@ All handled by `worker/index.js`. Names are normalized to title case on every wr
 | Method | Route | Description |
 |---|---|---|
 | `GET` | `/api/users` | All unique names ever recorded |
-| `POST` | `/api/score` | Submit or overwrite today's score |
-| `DELETE` | `/api/score` | Delete today's score for a user |
+| `POST` | `/api/score` | Submit or overwrite a score (today by default, or a specific date) |
+| `DELETE` | `/api/score` | Delete a score (today by default, or a specific date) |
 | `GET` | `/api/scores/week` | All scores for the current Mon–Fri week |
 | `GET` | `/api/scores/all` | All scores, all time |
 
@@ -78,10 +82,11 @@ All handled by `worker/index.js`. Names are normalized to title case on every wr
 ```json
 {
   "name": "Mance",
-  "score": "3"
+  "score": "3",
+  "date": "2026-04-28"
 }
 ```
-Valid scores: `"1"`, `"2"`, `"3"`, `"4"`, `"5"`, `"FAILURE"`
+Valid scores: `"1"`, `"2"`, `"3"`, `"4"`, `"5"`, `"6"`, `"FAILURE"`. `date` is optional — defaults to today. Must be within the current Mon–today range if provided.
 
 ---
 
@@ -139,6 +144,3 @@ The Worker deploys automatically as part of the Pages project via the `functions
 ---
 
 ## #TODO
-
-- may need to remove ontario branding since this isn't officially related to ontario lol
-- may add tabs for the stats window/modal to improve viewing experience

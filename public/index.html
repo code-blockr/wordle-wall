@@ -80,7 +80,7 @@
     /* ── Main ────────────────────────────────────────── */
     main {
       flex: 1;
-      padding: 24px 32px 80px;
+      padding: 24px 32px;
       max-width: 1100px;
       width: 100%;
       margin: 0 auto;
@@ -141,6 +141,163 @@
       display: none;
     }
     .reset-link.visible { display: inline; }
+    .wordle-link {
+      display: none;
+      color: #00478F;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+    .wordle-link.visible { display: inline; }
+    .wordle-link a { color: #00478F; }
+
+    /* ── Selected day column ─────────────────────────── */
+    .grid-table th.col-selected { background: #EAF2FB; border-top: 3px solid #00478F; }
+    .grid-table td.col-selected { background: #EAF2FB; }
+    .grid-table tr.my-row td.col-selected { background: #DCE9F5; }
+    th.clickable-date { cursor: pointer; }
+    th.clickable-date:hover { background: #DCE9F5 !important; }
+    tr.my-row td.clickable-date { cursor: pointer; }
+    tr.my-row td.clickable-date:hover { background: #C8D9EC !important; }
+
+    /* ── Paste section ───────────────────────────────── */
+    .paste-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 14px 0 12px;
+      color: #B8B8B8;
+      font-size: 12px;
+    }
+    .paste-divider span:not(.paste-divider-text) { flex: 1; border-top: 1px solid #E5E5E5; }
+    .wordle-paste-input {
+      width: 100%;
+      font-family: monospace;
+      font-size: 13px;
+      padding: 10px 12px;
+      border: 1px solid #CCCCCC;
+      border-radius: 4px;
+      resize: none;
+      color: #1A1A1A;
+      background: #FAFAFA;
+      line-height: 1.5;
+    }
+    .wordle-paste-input:focus { outline: none; border-color: #00478F; box-shadow: 0 0 0 3px #CCE0F5; background: #fff; }
+    .paste-feedback {
+      margin-top: 8px;
+      font-size: 13px;
+      min-height: 20px;
+    }
+    .paste-feedback.valid { color: #1B5E20; }
+    .paste-feedback.error { color: #C62828; }
+
+    /* ── Paste modal ─────────────────────────────────── */
+    .btn-paste {
+      background: none;
+      border: 2px solid #CCCCCC;
+      border-radius: 4px;
+      color: #4B4B4B;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 0 14px;
+      height: 52px;
+      cursor: pointer;
+      white-space: nowrap;
+      margin-left: auto;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-paste:hover { border-color: #00478F; color: #00478F; }
+    #paste-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 190;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.22s ease, visibility 0.22s ease;
+    }
+    #paste-modal-backdrop.open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+    #paste-modal {
+      background: #fff;
+      border-radius: 6px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+      width: 100%;
+      max-width: 420px;
+      padding: 24px;
+      transform: translateY(16px);
+      transition: transform 0.25s ease;
+    }
+    #paste-modal-backdrop.open #paste-modal {
+      transform: translateY(0);
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .modal-title {
+      font-family: 'Raleway', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1A1A1A;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #767676;
+      padding: 4px;
+      border-radius: 4px;
+      display: flex;
+    }
+    .modal-close:hover { background: #F2F2F2; }
+    .wordle-paste-input {
+      width: 100%;
+      font-family: monospace;
+      font-size: 13px;
+      padding: 10px 12px;
+      border: 1px solid #CCCCCC;
+      border-radius: 4px;
+      resize: none;
+      color: #1A1A1A;
+      background: #FAFAFA;
+      line-height: 1.6;
+    }
+    .wordle-paste-input:focus { outline: none; border-color: #00478F; box-shadow: 0 0 0 3px #CCE0F5; background: #fff; }
+    .paste-feedback {
+      margin-top: 10px;
+      font-size: 13px;
+      min-height: 20px;
+      line-height: 1.4;
+    }
+    .paste-feedback.valid { color: #1B5E20; }
+    .paste-feedback.error { color: #C62828; }
+    .btn-paste-submit {
+      display: none;
+      margin-top: 12px;
+      width: 100%;
+      padding: 10px 20px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      background: #00478F;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-paste-submit:hover { background: #003972; }
+    .btn-paste-submit.visible { display: block; }
 
     /* ── Week grid ───────────────────────────────────── */
     .grid-table {
@@ -234,13 +391,25 @@
       user-select: none;
     }
     .accordion-header:hover { background: #FAFAFA; }
+    .stats-accordion-header {
+      background: #EAF2FB;
+      border-left: 4px solid #00478F;
+      padding-left: 20px;
+    }
+    .stats-accordion-header:hover { background: #DCE9F5; }
+    .stats-accordion-header .section-title { color: #00478F; }
     .chevron {
-      transition: transform 0.2s;
+      transition: transform 0.3s ease;
       color: #767676;
+      flex-shrink: 0;
     }
     .chevron.expanded { transform: rotate(90deg); }
-    .accordion-body { display: none; }
-    .accordion-body.expanded { display: block; }
+    .accordion-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+    .accordion-body.expanded { max-height: 4000px; }
     .past-week-label {
       font-size: 12px;
       font-weight: 600;
@@ -251,104 +420,12 @@
       letter-spacing: 0.06em;
     }
 
-    /* ── Bottom bar ──────────────────────────────────── */
-    .bottom-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #fff;
-      border-top: 1px solid #E5E5E5;
-      padding: 12px 32px;
-      display: flex;
-      justify-content: flex-end;
-      z-index: 99;
-    }
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 11px 24px;
-      font-family: 'Open Sans', sans-serif;
-      font-size: 15px;
-      font-weight: 600;
-      color: #fff;
-      background: #00478F;
-      border: 2px solid #00478F;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .btn-primary:hover { background: #003972; border-color: #003972; }
-
-    /* ── Stats drawer ────────────────────────────────── */
-    #drawer-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.52);
-      z-index: 190;
-      display: none;
-    }
-    #drawer-backdrop.open { display: block; }
-
-    #stats-drawer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 72%;
-      background: #fff;
-      border-radius: 8px 8px 0 0;
-      box-shadow: 0 -4px 20px rgba(0,0,0,0.18);
-      z-index: 200;
-      display: flex;
-      flex-direction: column;
-      transform: translateY(100%);
-      transition: transform 0.3s ease;
-    }
-    #stats-drawer.open { transform: translateY(0); }
-
-    .drawer-handle {
-      width: 44px;
-      height: 4px;
-      background: #CCCCCC;
-      border-radius: 99px;
-      margin: 12px auto 0;
-      flex-shrink: 0;
-    }
-    .drawer-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 24px 12px;
-      border-bottom: 1px solid #E5E5E5;
-      flex-shrink: 0;
-    }
-    .drawer-title {
-      font-family: 'Raleway', sans-serif;
-      font-size: 1.125rem;
-      font-weight: 700;
-      color: #1A1A1A;
-    }
-    .drawer-close {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #767676;
-      padding: 4px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .drawer-close:hover { background: #F2F2F2; }
-    .drawer-body {
-      flex: 1;
-      overflow-y: auto;
-      padding: 24px;
+    /* ── Stats section ───────────────────────────────── */
+    .stats-content {
+      padding: 20px 24px;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      align-content: start;
+      gap: 16px;
     }
     .stat-section {
       background: #F8F8F8;
@@ -356,7 +433,17 @@
       border-radius: 4px;
       padding: 16px 20px;
     }
-    .stat-section.full-width { grid-column: 1 / -1; }
+    .past-weeks-accordion-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      cursor: pointer;
+      user-select: none;
+      border-top: 1px solid #E5E5E5;
+      background: #FAFAFA;
+    }
+    .past-weeks-accordion-header:hover { background: #F2F2F2; }
     .stat-label {
       font-size: 11px;
       font-weight: 600;
@@ -429,13 +516,35 @@
       font-weight: 700;
     }
 
+    /* ── Footer ──────────────────────────────────────── */
+    footer {
+      background: #1A1A1A;
+      padding: 20px 32px;
+      flex-shrink: 0;
+      margin-top: auto;
+    }
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .footer-links a {
+      color: #B8B8B8;
+      font-size: 12px;
+      text-decoration: underline;
+    }
+    .footer-copy {
+      font-size: 12px;
+      color: #767676;
+    }
+
     @media (max-width: 700px) {
-      main { padding: 16px 16px 80px; }
+      main { padding: 16px; }
       .ontario-header { padding: 0 16px; }
       .sub-header { padding: 0 16px; }
-      .drawer-body { grid-template-columns: 1fr; }
-      .stat-section.full-width { grid-column: 1; }
-      .bottom-bar { padding: 12px 16px; }
+      .stats-content { grid-template-columns: 1fr; }
+      footer { padding: 20px 16px; }
     }
   </style>
 </head>
@@ -463,8 +572,8 @@
   <main>
 
     <!-- Score submission -->
-    <div class="card card-body">
-      <h2 class="section-title">Your score for today</h2>
+    <div class="card card-body" id="score-card">
+      <h2 class="section-title" id="score-card-title">Your score for today</h2>
       <div class="score-buttons" id="score-buttons">
         <button class="score-btn" data-score="1" style="background:#E8F5E9;color:#1B5E20;border-color:#1B5E20" onclick="submitScore('1')">1</button>
         <button class="score-btn" data-score="2" style="background:#E8F5E9;color:#2E7D32;border-color:#2E7D32" onclick="submitScore('2')">2</button>
@@ -473,8 +582,10 @@
         <button class="score-btn" data-score="5" style="background:#FFF3E0;color:#EF6C00;border-color:#EF6C00" onclick="submitScore('5')">5</button>
         <button class="score-btn" data-score="6" style="background:#FFEBEE;color:#C62828;border-color:#C62828" onclick="submitScore('6')">6</button>
         <button class="score-btn" data-score="FAILURE" style="background:#FFEBEE;color:#C62828;border-color:#C62828;min-width:80px;font-size:13px" onclick="submitScore('FAILURE')">Failure</button>
+        <button class="btn-paste" onclick="openPasteModal()">Paste Wordle Share Card</button>
       </div>
       <button class="reset-link" id="reset-btn" onclick="resetScore()">Reset my score for today</button>
+      <span class="wordle-link" id="wordle-link">Haven't done wordle yet today? <a href="https://www.nytimes.com/games/wordle/index.html" target="_blank" rel="noopener">Here's the link</a></span>
     </div>
 
     <!-- Week grid -->
@@ -485,74 +596,82 @@
       <div id="week-grid-container"></div>
     </div>
 
-    <!-- Past weeks accordion -->
+    <!-- Leaderboard -->
+    <div class="card card-body">
+      <h2 class="section-title">Leaderboard <span style="font-size:12px;font-weight:400;color:#767676">— lower is better</span></h2>
+      <table class="lb-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Member</th>
+            <th>Avg score</th>
+            <th>Games played</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard-body"></tbody>
+      </table>
+    </div>
+
+    <!-- View Stats accordion -->
     <div class="card">
-      <div class="accordion-header" onclick="togglePastWeeks()">
-        <h2 class="section-title" style="margin-bottom:0">Past weeks</h2>
-        <svg class="chevron" id="past-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <div class="accordion-header stats-accordion-header" onclick="toggleStats()">
+        <h2 class="section-title" style="margin-bottom:0">View Stats</h2>
+        <svg class="chevron" id="stats-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
           <path d="M6 4l4 4-4 4" stroke="#767676" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <div class="accordion-body" id="past-weeks-body"></div>
+      <div class="accordion-body" id="stats-body">
+        <div class="stats-content">
+          <div class="stat-section">
+            <div class="stat-label">All-time average score</div>
+            <canvas id="bar-chart"></canvas>
+          </div>
+          <div class="stat-section">
+            <div class="stat-label">Score trends over time</div>
+            <div class="chart-toggle">
+              <button class="toggle-btn active" id="toggle-daily" onclick="setChartMode('daily')">Daily</button>
+              <button class="toggle-btn" id="toggle-weekly" onclick="setChartMode('weekly')">Weekly</button>
+            </div>
+            <canvas id="line-chart"></canvas>
+          </div>
+        </div>
+        <div class="past-weeks-accordion-header" onclick="togglePastWeeks()">
+          <h2 class="section-title" style="margin-bottom:0;font-size:14px">Past weeks</h2>
+          <svg class="chevron" id="past-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 4l4 4-4 4" stroke="#767676" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="accordion-body" id="past-weeks-body"></div>
+      </div>
     </div>
 
   </main>
 
-  <!-- Bottom bar -->
-  <div class="bottom-bar">
-    <button class="btn-primary" onclick="openDrawer()">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <rect x="2" y="10" width="2" height="4" rx="1" fill="white"/>
-        <rect x="7" y="6" width="2" height="8" rx="1" fill="white"/>
-        <rect x="12" y="2" width="2" height="12" rx="1" fill="white"/>
-      </svg>
-      View stats
-    </button>
-  </div>
-
-  <!-- Drawer backdrop -->
-  <div id="drawer-backdrop" onclick="closeDrawer()"></div>
-
-  <!-- Stats drawer -->
-  <div id="stats-drawer">
-    <div class="drawer-handle"></div>
-    <div class="drawer-header">
-      <span class="drawer-title">Team stats</span>
-      <button class="drawer-close" onclick="closeDrawer()">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <path d="M5 5l10 10M15 5L5 15" stroke="#767676" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-      </button>
-    </div>
-    <div class="drawer-body">
-      <div class="stat-section full-width">
-        <div class="stat-label">Leaderboard — lower is better</div>
-        <table class="lb-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Member</th>
-              <th>Avg score</th>
-              <th>Games played</th>
-            </tr>
-          </thead>
-          <tbody id="leaderboard-body"></tbody>
-        </table>
+  <!-- Paste Wordle modal -->
+  <div id="paste-modal-backdrop" onclick="closePasteModal()">
+    <div id="paste-modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <span class="modal-title">Paste Wordle Share Card</span>
+        <button class="modal-close" onclick="closePasteModal()">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M5 5l10 10M15 5L5 15" stroke="#767676" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
       </div>
-      <div class="stat-section">
-        <div class="stat-label">All-time average score</div>
-        <canvas id="bar-chart"></canvas>
-      </div>
-      <div class="stat-section">
-        <div class="stat-label">Score trends over time</div>
-        <div class="chart-toggle">
-          <button class="toggle-btn active" id="toggle-daily" onclick="setChartMode('daily')">Daily</button>
-          <button class="toggle-btn" id="toggle-weekly" onclick="setChartMode('weekly')">Weekly</button>
-        </div>
-        <canvas id="line-chart"></canvas>
-      </div>
+      <textarea id="wordle-paste" class="wordle-paste-input" rows="6"
+        placeholder="Wordle 1,775 5/6&#10;&#10;⬛🟨🟨⬛⬛&#10;🟨🟨🟩⬛⬛&#10;🟨⬛🟩⬛⬛&#10;⬛🟩🟩🟩🟩"
+        oninput="onWordlePaste()"></textarea>
+      <div id="paste-feedback" class="paste-feedback"></div>
+      <button id="paste-submit-btn" class="btn-paste-submit" onclick="submitPastedScore()">Submit</button>
     </div>
   </div>
+
+  <footer>
+    <div class="footer-links">
+      <a href="https://github.com/code-blockr/wordle-wall" target="_blank" rel="noopener">Mance's GitHub</a>
+      <a href="https://github.com/code-blockr/wordle-wall/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Patch notes</a>
+    </div>
+  </footer>
 
   <script>
     function escapeHtml(str) {
@@ -630,6 +749,21 @@
       return new Date().toISOString().slice(0, 10)
     }
 
+    let selectedDate = today()
+
+    function ordinal(n) {
+      const s = ['th', 'st', 'nd', 'rd']
+      const v = n % 100
+      return n + (s[(v - 20) % 10] || s[v] || s[0])
+    }
+
+    function formatDateForTitle(isoDate) {
+      const d = new Date(isoDate + 'T00:00:00')
+      const weekday = d.toLocaleDateString('en-CA', { weekday: 'long' })
+      const month = d.toLocaleDateString('en-CA', { month: 'long' })
+      return `${weekday}, ${month} ${ordinal(d.getDate())}`
+    }
+
     function dayLabel(isoDate) {
       const d = new Date(isoDate + 'T00:00:00')
       return d.toLocaleDateString('en-CA', { weekday: 'short' })
@@ -641,12 +775,20 @@
       location.href = 'welcome.html'
     }
 
+    // ── Date selection ────────────────────────────────────
+    function selectDate(date) {
+      selectedDate = date
+      renderScoreButtons()
+      renderWeekGrid()
+      document.getElementById('score-card').scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    }
+
     // ── Score submission ──────────────────────────────────
     async function submitScore(score) {
       const res = await fetch('/api/score', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: userName, score })
+        body: JSON.stringify({ name: userName, score, date: selectedDate })
       })
       if (res.ok) {
         await refreshData()
@@ -657,7 +799,7 @@
       const res = await fetch('/api/score', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: userName })
+        body: JSON.stringify({ name: userName, date: selectedDate })
       })
       if (res.ok) {
         await refreshData()
@@ -666,9 +808,15 @@
 
     function renderScoreButtons() {
       const todayISO = today()
-      const myScore = weekScores.find(s => s.name === userName && s.date === todayISO)
+      const myScore = weekScores.find(s => s.name === userName && s.date === selectedDate)
       const btns = document.querySelectorAll('.score-btn')
       const resetBtn = document.getElementById('reset-btn')
+      const wordleLink = document.getElementById('wordle-link')
+
+      const title = document.getElementById('score-card-title')
+      title.textContent = selectedDate === todayISO
+        ? 'Your score for today'
+        : `Your score for ${formatDateForTitle(selectedDate)}`
 
       if (myScore) {
         btns.forEach(btn => {
@@ -676,12 +824,18 @@
           btn.classList.toggle('selected', btn.dataset.score === myScore.score)
         })
         resetBtn.classList.add('visible')
+        wordleLink.classList.remove('visible')
       } else {
         btns.forEach(btn => {
           btn.disabled = false
           btn.classList.remove('selected')
         })
         resetBtn.classList.remove('visible')
+        if (selectedDate === todayISO) {
+          wordleLink.classList.add('visible')
+        } else {
+          wordleLink.classList.remove('visible')
+        }
       }
     }
 
@@ -705,7 +859,10 @@
 
       weekDates.forEach(date => {
         const isToday = date === todayISO
-        html += `<th class="${isToday ? 'col-today' : ''}">`
+        const isPast = date <= todayISO
+        const isSelected = date === selectedDate
+        const classes = [isToday ? 'col-today' : '', isSelected ? 'col-selected' : '', isPast ? 'clickable-date' : ''].filter(Boolean).join(' ')
+        html += `<th class="${classes}"${isPast ? ` onclick="selectDate('${date}')"` : ''}>`
         html += `<span class="day-name${isToday ? ' today-col' : ''}">${dayLabel(date)}`
         if (isToday) html += '<span class="today-badge">Today</span>'
         html += '</span>'
@@ -726,8 +883,11 @@
         let vals = []
         weekDates.forEach(date => {
           const isToday = date === todayISO
+          const isPast = date <= todayISO
+          const isSelected = date === selectedDate
           const score = scoreMap[name] && scoreMap[name][date]
-          html += `<td class="${isToday ? 'col-today' : ''}">`
+          const classes = [isToday ? 'col-today' : '', isSelected ? 'col-selected' : '', isMe && isPast ? 'clickable-date' : ''].filter(Boolean).join(' ')
+          html += `<td class="${classes}"${isMe && isPast ? ` onclick="selectDate('${date}')"` : ''}>`
           if (score) {
             html += `<span class="score-chip" style="${scoreChipStyle(score)}">${escapeHtml(score === 'FAILURE' ? 'F' : score)}</span>`
             vals.push(scoreToNum(score))
@@ -797,21 +957,39 @@
       chevron.classList.toggle('expanded')
     }
 
-    // ── Stats drawer ──────────────────────────────────────
-    function openDrawer() {
-      document.getElementById('stats-drawer').classList.add('open')
-      document.getElementById('drawer-backdrop').classList.add('open')
-      if (!chartsInitialized) {
-        initCharts()
-        chartsInitialized = true
-      } else {
-        updateCharts()
+    // ── Stats accordion ───────────────────────────────────
+    function smoothScrollTo(targetY, duration) {
+      const startY = window.scrollY
+      const distance = targetY - startY
+      const startTime = performance.now()
+      function easeInOut(t) {
+        return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t
       }
+      function step(now) {
+        const elapsed = now - startTime
+        const progress = Math.min(elapsed / duration, 1)
+        window.scrollTo(0, startY + distance * easeInOut(progress))
+        if (progress < 1) requestAnimationFrame(step)
+      }
+      requestAnimationFrame(step)
     }
 
-    function closeDrawer() {
-      document.getElementById('stats-drawer').classList.remove('open')
-      document.getElementById('drawer-backdrop').classList.remove('open')
+    function toggleStats() {
+      const body = document.getElementById('stats-body')
+      const chevron = document.getElementById('stats-chevron')
+      const isOpening = !body.classList.contains('expanded')
+      body.classList.toggle('expanded')
+      chevron.classList.toggle('expanded')
+      if (isOpening) {
+        if (!chartsInitialized) {
+          initCharts()
+          chartsInitialized = true
+        }
+        setTimeout(() => {
+          const headerTop = document.querySelector('.stats-accordion-header').getBoundingClientRect().top
+          smoothScrollTo(window.scrollY + headerTop, 1200)
+        }, 50)
+      }
     }
 
     function computePersonStats() {
@@ -867,8 +1045,6 @@
         options: lineChartOptions()
       })
 
-      // Leaderboard
-      renderLeaderboard(personStats)
     }
 
     function lineChartOptions() {
@@ -995,6 +1171,92 @@
       }).join('')
     }
 
+    // ── Wordle paste ──────────────────────────────────────
+    const WORDLE_EPOCH = new Date('2021-06-20T00:00:00Z')
+
+    function dateToWordleNumber(isoDate) {
+      const d = new Date(isoDate + 'T00:00:00Z')
+      return Math.round((d - WORDLE_EPOCH) / 86400000) + 1
+    }
+
+    function parseWordleShare(text) {
+      const match = text.match(/Wordle\s+([\d,]+)\s+([1-6X])\/6/i)
+      if (!match) return null
+      return {
+        number: parseInt(match[1].replace(/,/g, ''), 10),
+        score: match[2].toUpperCase() === 'X' ? 'FAILURE' : match[2]
+      }
+    }
+
+    let parsedPasteScore = null
+
+    function openPasteModal() {
+      document.getElementById('paste-modal-backdrop').classList.add('open')
+      document.getElementById('wordle-paste').value = ''
+      document.getElementById('paste-feedback').textContent = ''
+      document.getElementById('paste-feedback').className = 'paste-feedback'
+      document.getElementById('paste-submit-btn').classList.remove('visible')
+      parsedPasteScore = null
+      setTimeout(() => document.getElementById('wordle-paste').focus(), 50)
+    }
+
+    function closePasteModal() {
+      document.getElementById('paste-modal-backdrop').classList.remove('open')
+    }
+
+    function onWordlePaste() {
+      const text = document.getElementById('wordle-paste').value
+      const feedback = document.getElementById('paste-feedback')
+      const submitBtn = document.getElementById('paste-submit-btn')
+      parsedPasteScore = null
+      submitBtn.classList.remove('visible')
+
+      const result = parseWordleShare(text)
+      if (!result) {
+        feedback.textContent = text.trim() ? 'Could not detect a Wordle result — copy the full share text.' : ''
+        feedback.className = 'paste-feedback error'
+        return
+      }
+
+      const expected = dateToWordleNumber(selectedDate)
+      if (result.number !== expected) {
+        const expectedDate = new Date(WORDLE_EPOCH.getTime() + (result.number - 1) * 86400000)
+        const dateStr = expectedDate.toLocaleDateString('en-CA', { month: 'long', day: 'numeric' })
+        feedback.textContent = `That's Wordle #${result.number.toLocaleString()} (${dateStr}), not the selected date.`
+        feedback.className = 'paste-feedback error'
+        return
+      }
+
+      const scoreLabel = result.score === 'FAILURE' ? 'X/6 — Failure' : `${result.score}/6`
+      feedback.textContent = `Detected: Wordle #${result.number.toLocaleString()} — ${scoreLabel}`
+      feedback.className = 'paste-feedback valid'
+      parsedPasteScore = result.score
+      submitBtn.textContent = `Submit score: ${scoreLabel}`
+      submitBtn.classList.add('visible')
+    }
+
+    async function submitPastedScore() {
+      if (!parsedPasteScore) return
+      const score = parsedPasteScore
+      closePasteModal()
+      const res = await fetch('/api/score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: userName, score, date: selectedDate })
+      })
+      if (res.ok) await refreshData()
+    }
+
+    document.addEventListener('keydown', e => {
+      if (!document.getElementById('paste-modal-backdrop').classList.contains('open')) return
+      if (e.key === 'Escape') {
+        closePasteModal()
+      } else if (e.key === 'Enter' && parsedPasteScore && document.activeElement !== document.getElementById('wordle-paste')) {
+        e.preventDefault()
+        submitPastedScore()
+      }
+    })
+
     // ── Data loading ──────────────────────────────────────
     async function refreshData() {
       const todayISO = today()
@@ -1012,6 +1274,7 @@
       renderScoreButtons()
       renderWeekGrid()
       renderPastWeeks()
+      renderLeaderboard(computePersonStats())
 
       if (chartsInitialized) {
         updateCharts()
