@@ -16,7 +16,13 @@
     - Score buttons 1-6 and FAIL are now spread evenly across a single row on mobile. The "Paste Wordle Share Card" button sits on its own row underneath.
     - Removed the "Today" badge from the weekly chart on mobile — the column highlight is enough and makes spacing nicer.
     - The weekly score table now scrolls horizontally on mobile so no columns get cut off, if it STILL doesn't fit on some people's phones. 
-    - 
+
+- Added a winner banner 
+    - Mondays and Tuesdays will display the winner of the previous week. 
+
+- Reversed the order of the y-axis on the stat charts
+    - makes it clearer who's actually "winning" since up usually means good on charts. 
+    
 ## April 29 2026
 
 - Wordle link for new submissions

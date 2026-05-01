@@ -17,7 +17,7 @@
       flex-direction: column;
     }
 
-    /* ── Header ─────────────────────────────────────── */
+    /*  Header */
     .ontario-header {
       background: #1A1A1A;
       height: 64px;
@@ -52,7 +52,7 @@
     }
     .not-you-btn:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
 
-    /* ── Sub-header ──────────────────────────────────── */
+    /*  Sub-header */
     .sub-header {
       background: #fff;
       border-bottom: 3px solid #FFAB00;
@@ -77,7 +77,7 @@
       color: #767676;
     }
 
-    /* ── Main ────────────────────────────────────────── */
+    /*  Main */
     main {
       flex: 1;
       padding: 24px 32px;
@@ -86,7 +86,7 @@
       margin: 0 auto;
     }
 
-    /* ── Cards ───────────────────────────────────────── */
+    /*  Cards */
     .card {
       background: #fff;
       border: 1px solid #E5E5E5;
@@ -105,7 +105,7 @@
       margin-bottom: 14px;
     }
 
-    /* ── Score buttons ───────────────────────────────── */
+    /*  Score buttons */
     .score-buttons { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     .score-btn {
       display: inline-flex;
@@ -150,7 +150,7 @@
     .wordle-link.visible { display: inline; }
     .wordle-link a { color: #00478F; }
 
-    /* ── Selected day column ─────────────────────────── */
+    /*  Selected day column */
     .grid-table th.col-selected { background: #EAF2FB; border-top: 3px solid #00478F; }
     .grid-table td.col-selected { background: #EAF2FB; }
     .grid-table tr.my-row td.col-selected { background: #DCE9F5; }
@@ -159,7 +159,7 @@
     tr.my-row td.clickable-date { cursor: pointer; }
     tr.my-row td.clickable-date:hover { background: #C8D9EC !important; }
 
-    /* ── Paste section ───────────────────────────────── */
+    /*  Paste section */
     .paste-divider {
       display: flex;
       align-items: center;
@@ -190,7 +190,7 @@
     .paste-feedback.valid { color: #1B5E20; }
     .paste-feedback.error { color: #C62828; }
 
-    /* ── Paste modal ─────────────────────────────────── */
+    /*  Paste modal */
     .btn-paste {
       background: none;
       border: 2px solid #CCCCCC;
@@ -274,7 +274,7 @@
       line-height: 1.6;
     }
     .wordle-paste-input:focus { outline: none; border-color: #00478F; box-shadow: 0 0 0 3px #CCE0F5; background: #fff; }
-    .wordle-paste-input::placeholder { color: #AAAAAA; }
+    .wordle-paste-input::placeholder { color: #AAAAAA; opacity: 0.4; }
     .btn-paste:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
     .paste-feedback {
       margin-top: 10px;
@@ -301,7 +301,7 @@
     .btn-paste-submit:hover { background: #003972; }
     .btn-paste-submit.visible { display: block; }
 
-    /* ── Week grid ───────────────────────────────────── */
+    /*  Week grid */
     .grid-table {
       width: 100%;
       border-collapse: collapse;
@@ -383,7 +383,7 @@
     }
     .empty-cell { color: #CCCCCC; font-size: 16px; }
 
-    /* ── Past weeks ──────────────────────────────────── */
+    /*  Past weeks */
     .accordion-header {
       display: flex;
       align-items: center;
@@ -422,7 +422,7 @@
       letter-spacing: 0.06em;
     }
 
-    /* ── Stats section ───────────────────────────────── */
+    /*  Stats section */
     .stats-content {
       padding: 20px 24px;
       display: grid;
@@ -455,7 +455,7 @@
       margin-bottom: 14px;
     }
 
-    /* ── Line chart toggle ───────────────────────────── */
+    /*  Line chart toggle */
     .chart-toggle {
       display: flex;
       gap: 0;
@@ -482,7 +482,7 @@
     }
     .toggle-btn:hover:not(.active) { background: #F2F2F2; }
 
-    /* ── Leaderboard ─────────────────────────────────── */
+    /*  Leaderboard */
     .lb-table {
       width: 100%;
       border-collapse: collapse;
@@ -518,7 +518,7 @@
       font-weight: 700;
     }
 
-    /* ── Footer ──────────────────────────────────────── */
+    /*  Footer */
     footer {
       background: #1A1A1A;
       padding: 20px 32px;
@@ -539,6 +539,31 @@
     .footer-copy {
       font-size: 12px;
       color: #767676;
+    }
+
+    /* Winner banner */
+    #winner-banner {
+      border-radius: 4px;
+      padding: 14px 20px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-family: 'Raleway', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.02em;
+    }
+    #winner-banner.winner {
+      background: #FFF8E1;
+      border: 1px solid #FFD54F;
+      color: #5D4037;
+    }
+    #winner-banner.fallback {
+      background: #F5F5F5;
+      border: 1px solid #E0E0E0;
+      color: #767676;
+      font-family: 'Open Sans', sans-serif;
+      font-weight: 400;
+      font-size: 13px;
     }
 
     .label-short { display: none; }
@@ -588,6 +613,9 @@
 
   <!-- Main content -->
   <main>
+
+    <!-- Winner banner -->
+    <div id="winner-banner" style="display:none"></div>
 
     <!-- Score submission -->
     <div class="card card-body" id="score-card">
@@ -701,7 +729,7 @@
         .replace(/'/g, '&#39;')
     }
 
-    // ── State ─────────────────────────────────────────────
+    //  State 
     let userName = ''
     let weekScores = []
     let allScores = []
@@ -712,7 +740,7 @@
 
     const PERSON_COLORS = ['#00478F', '#1B5E20', '#E65100', '#551A8B', '#C62828', '#006064', '#E91E63', '#37474F']
 
-    // ── Helpers ───────────────────────────────────────────
+    //  Helpers 
     function titleCase(str) {
       return str.trim().split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ')
     }
@@ -793,13 +821,13 @@
       return d.toLocaleDateString('en-CA', { weekday: 'short' })
     }
 
-    // ── Sign out ──────────────────────────────────────────
+    //  Sign out 
     function signOut() {
       localStorage.removeItem('userName')
       location.href = 'welcome.html'
     }
 
-    // ── Date selection ────────────────────────────────────
+    //  Date selection 
     function selectDate(date) {
       selectedDate = date
       renderScoreButtons()
@@ -807,7 +835,7 @@
       document.getElementById('score-card').scrollIntoView({ behavior: 'smooth', block: 'nearest' })
     }
 
-    // ── Score submission ──────────────────────────────────
+    //  Score submission 
     async function submitScore(score) {
       const res = await fetch('/api/score', {
         method: 'POST',
@@ -866,7 +894,7 @@
       }
     }
 
-    // ── Week grid ─────────────────────────────────────────
+    //  Week grid 
     function buildWeekGrid(scores, mondayISO, todayISO, showYou) {
       const weekDates = getWeekDates(mondayISO)
       const names = [...new Set(scores.map(s => s.name))].sort()
@@ -945,7 +973,7 @@
       container.innerHTML = buildWeekGrid(weekScores, mondayISO, todayISO, true)
     }
 
-    // ── Past weeks ────────────────────────────────────────
+    //  Past weeks 
     function renderPastWeeks() {
       const todayISO = today()
       const currentMonday = getMondayOf(todayISO)
@@ -984,7 +1012,7 @@
       chevron.classList.toggle('expanded')
     }
 
-    // ── Stats accordion ───────────────────────────────────
+    //  Stats accordion 
     function smoothScrollTo(targetY, duration) {
       const startY = window.scrollY
       const distance = targetY - startY
@@ -1046,14 +1074,15 @@
             data: personStats.map(p => +p.avg.toFixed(2)),
             backgroundColor: barColors,
             borderRadius: 3,
+            base: 7,
           }]
         },
         options: {
           plugins: { legend: { display: false } },
           scales: {
             y: {
-              min: 1, max: 7,
-              ticks: { stepSize: 1, font: { size: 10, family: 'Open Sans' } },
+              min: 1, max: 7, reverse: true,
+              ticks: { stepSize: 1, font: { size: 10, family: 'Open Sans' }, callback: v => v === 7 ? 'Fail' : v },
               grid: { color: '#E5E5E5' }
             },
             x: { ticks: { font: { size: 10, family: 'Open Sans' } }, grid: { display: false } }
@@ -1084,8 +1113,8 @@
         },
         scales: {
           y: {
-            min: 1, max: 7,
-            ticks: { stepSize: 1, font: { size: 10, family: 'Open Sans' } },
+            min: 1, max: 7, reverse: true,
+            ticks: { stepSize: 1, font: { size: 10, family: 'Open Sans' }, callback: v => v === 7 ? 'Fail' : v },
             grid: { color: '#E5E5E5' }
           },
           x: {
@@ -1093,7 +1122,7 @@
             grid: { display: false }
           }
         },
-        elements: { point: { radius: 3 }, line: { tension: 0.3 } },
+        elements: { point: { radius: 1 }, line: { tension: 0.3 } },
         spanGaps: false,
         maintainAspectRatio: true,
         aspectRatio: 1.8,
@@ -1198,7 +1227,7 @@
       }).join('')
     }
 
-    // ── Wordle paste ──────────────────────────────────────
+    //  Wordle paste 
     const WORDLE_EPOCH = new Date('2021-06-20T00:00:00Z')
 
     function dateToWordleNumber(isoDate) {
@@ -1284,7 +1313,51 @@
       }
     })
 
-    // ── Data loading ──────────────────────────────────────
+    //  Winner banner 
+    function renderWinnerBanner() {
+      const banner = document.getElementById('winner-banner')
+      if (!banner) return
+
+      const dow = new Date().getDay()
+      if (dow !== 1 && dow !== 2) { banner.style.display = 'none'; return }
+
+      const thisMonday = getMondayOf(today())
+      const lastMon = new Date(thisMonday + 'T00:00:00')
+      lastMon.setDate(lastMon.getDate() - 7)
+      const lastFri = new Date(lastMon)
+      lastFri.setDate(lastMon.getDate() + 4)
+      const monday = lastMon.toISOString().slice(0, 10)
+      const friday = lastFri.toISOString().slice(0, 10)
+
+      const byName = {}
+      allScores.filter(s => s.date >= monday && s.date <= friday).forEach(s => {
+        if (!byName[s.name]) byName[s.name] = []
+        byName[s.name].push(scoreToNum(s.score))
+      })
+
+      const qualified = Object.entries(byName)
+        .filter(([, scores]) => scores.length >= 3)
+        .map(([name, scores]) => ({ name, avg: scores.reduce((a, b) => a + b, 0) / scores.length }))
+
+      if (qualified.length === 0) {
+        banner.className = 'fallback'
+        banner.textContent = 'Not enough people played to determine a winner last week'
+        banner.style.display = ''
+        return
+      }
+
+      const minAvg = Math.min(...qualified.map(p => p.avg))
+      const winners = qualified.filter(p => p.avg === minAvg).map(p => p.name)
+      const label = winners.length === 1 ? "LAST WEEK'S WINNER" : "LAST WEEK'S WINNERS"
+      const names = winners.length > 1
+        ? winners.slice(0, -1).join(', ') + ' & ' + winners[winners.length - 1]
+        : winners[0]
+      banner.className = 'winner'
+      banner.textContent = `🎉 ${label}: ${names} 🎉`
+      banner.style.display = ''
+    }
+
+    //  Data loading 
     async function refreshData() {
       const todayISO = today()
       const mondayISO = getMondayOf(todayISO)
@@ -1302,13 +1375,14 @@
       renderWeekGrid()
       renderPastWeeks()
       renderLeaderboard(computePersonStats())
+      renderWinnerBanner()
 
       if (chartsInitialized) {
         updateCharts()
       }
     }
 
-    // ── Init ──────────────────────────────────────────────
+    //  Init
     function init() {
       userName = localStorage.getItem('userName')
       if (!userName) {
