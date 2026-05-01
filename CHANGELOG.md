@@ -1,5 +1,22 @@
 # Changelog / Patch Notes
 
+## May 1 2026
+
+- Dimmer placeholder text in the paste modal
+
+    - The example share card in the paste modal text box is now visibly dimmer, making it clearer that it's placeholder text and not some bug or artifact. 
+
+- "Paste Wordle Share Card" button now disables after score submission
+
+    - Like the score buttons, the paste button is now greyed out and unclickable once you've already submitted a score for the selected day.
+
+- Mobile layout improvements
+
+    - Date in the sub-header now shows in a pseudo-ISO 8601 format on mobile (e.g. "Wed 2026-05-01") instead of the full long-form.
+    - Score buttons 1-6 and FAIL are now spread evenly across a single row on mobile. The "Paste Wordle Share Card" button sits on its own row underneath.
+    - Removed the "Today" badge from the weekly chart on mobile — the column highlight is enough and makes spacing nicer.
+    - The weekly score table now scrolls horizontally on mobile so no columns get cut off, if it STILL doesn't fit on some people's phones. 
+    - 
 ## April 29 2026
 
 - Wordle link for new submissions

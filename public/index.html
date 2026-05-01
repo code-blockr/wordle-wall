@@ -274,6 +274,8 @@
       line-height: 1.6;
     }
     .wordle-paste-input:focus { outline: none; border-color: #00478F; box-shadow: 0 0 0 3px #CCE0F5; background: #fff; }
+    .wordle-paste-input::placeholder { color: #AAAAAA; }
+    .btn-paste:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
     .paste-feedback {
       margin-top: 10px;
       font-size: 13px;
@@ -539,12 +541,27 @@
       color: #767676;
     }
 
+    .label-short { display: none; }
+    .sub-header-date--mobile { display: none; }
+
     @media (max-width: 700px) {
       main { padding: 16px; }
       .ontario-header { padding: 0 16px; }
       .sub-header { padding: 0 16px; }
       .stats-content { grid-template-columns: 1fr; }
       footer { padding: 20px 16px; }
+      #current-date { display: none; }
+      .sub-header-date--mobile { display: inline; }
+      .score-buttons { column-gap: 6px; row-gap: 12px; }
+      .score-btn { flex: 1 1 0; min-width: 0; height: 44px; font-size: 13px; }
+      .score-btn[data-score="FAILURE"] { min-width: 0; }
+      .label-full { display: none; }
+      .label-short { display: inline; }
+      .btn-paste { flex: 0 0 100%; margin-left: 0; height: 44px; }
+      .reset-link { margin-top: 16px; }
+      .wordle-link { margin-top: 16px; }
+      .today-badge { display: none; }
+      #week-grid-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     }
   </style>
 </head>
@@ -566,6 +583,7 @@
   <div class="sub-header">
     <span class="sub-header-title">Graham's Wordle Wall, but now it's on the web.</span>
     <span class="sub-header-date" id="current-date"></span>
+    <span class="sub-header-date sub-header-date--mobile" id="current-date-mobile"></span>
   </div>
 
   <!-- Main content -->
@@ -581,7 +599,7 @@
         <button class="score-btn" data-score="4" style="background:#FFF3E0;color:#E65100;border-color:#E65100" onclick="submitScore('4')">4</button>
         <button class="score-btn" data-score="5" style="background:#FFF3E0;color:#EF6C00;border-color:#EF6C00" onclick="submitScore('5')">5</button>
         <button class="score-btn" data-score="6" style="background:#FFEBEE;color:#C62828;border-color:#C62828" onclick="submitScore('6')">6</button>
-        <button class="score-btn" data-score="FAILURE" style="background:#FFEBEE;color:#C62828;border-color:#C62828;min-width:80px;font-size:13px" onclick="submitScore('FAILURE')">Failure</button>
+        <button class="score-btn" data-score="FAILURE" style="background:#FFEBEE;color:#C62828;border-color:#C62828;min-width:80px;font-size:13px" onclick="submitScore('FAILURE')"><span class="label-full">Failure</span><span class="label-short">FAIL</span></button>
         <button class="btn-paste" onclick="openPasteModal()">Paste Wordle Share Card</button>
       </div>
       <button class="reset-link" id="reset-btn" onclick="resetScore()">Reset my score for today</button>
@@ -727,6 +745,12 @@
       return d.toLocaleDateString('en-CA', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
     }
 
+    function formatDateMobile(isoDate) {
+      const d = new Date(isoDate + 'T00:00:00')
+      const weekday = d.toLocaleDateString('en-CA', { weekday: 'short' })
+      return `${weekday} ${isoDate}`
+    }
+
     function scoreToNum(score) {
       return score === 'FAILURE' ? 7 : parseInt(score, 10)
     }
@@ -810,6 +834,7 @@
       const todayISO = today()
       const myScore = weekScores.find(s => s.name === userName && s.date === selectedDate)
       const btns = document.querySelectorAll('.score-btn')
+      const pasteBtn = document.querySelector('.btn-paste')
       const resetBtn = document.getElementById('reset-btn')
       const wordleLink = document.getElementById('wordle-link')
 
@@ -823,6 +848,7 @@
           btn.disabled = true
           btn.classList.toggle('selected', btn.dataset.score === myScore.score)
         })
+        pasteBtn.disabled = true
         resetBtn.classList.add('visible')
         wordleLink.classList.remove('visible')
       } else {
@@ -830,6 +856,7 @@
           btn.disabled = false
           btn.classList.remove('selected')
         })
+        pasteBtn.disabled = false
         resetBtn.classList.remove('visible')
         if (selectedDate === todayISO) {
           wordleLink.classList.add('visible')
@@ -1291,6 +1318,7 @@
 
       document.getElementById('header-name').textContent = userName
       document.getElementById('current-date').textContent = formatDateFull(today())
+      document.getElementById('current-date-mobile').textContent = formatDateMobile(today())
 
       refreshData()
     }
