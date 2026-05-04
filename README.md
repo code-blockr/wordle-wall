@@ -40,14 +40,15 @@ If you haven't logged a score yet for the day, there's a direct link to the NYT 
 ### Current week grid
 Shows the Mon–Fri grid for the current week, one row per team member who has any score this week. Empty cells for days not yet submitted. Clicking a column header or your own cell selects that day for score entry.
 
-### Leaderboard
-Always visible below the week grid. Ranked by all-time average score, lower is better. FAILURE counts as 7 for the math. Updates whenever scores are refreshed.
+### Weekly Leaderboard
+Always visible below the week grid. Ranked by current week average score. FAILURE counts as 7 for the math. Updates whenever scores are refreshed.
 
 ### View Stats
 An accordion below the leaderboard. Has:
 - Bar chart: all-time average score per person
 - Line chart: score trend over time, daily or weekly toggle
-- Past weeks: all previous Mon–Fri grids, read-only, nested inside the accordion
+- All-Time Leaderboard: records all-time averages, games played, and weekly wins
+- Historical Data: all previous Mon–Fri grids, read-only, nested inside the accordion
 
 ---
 

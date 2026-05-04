@@ -1,5 +1,24 @@
 # Changelog / Patch Notes
 
+## May 4 2026
+
+- Weekends are now locked for score entry
+
+    - Score buttons are greyed out and disabled on Saturdays and Sundays, and the API will reject any submission attempts. Weekends are not supposed to count toward the weekly averages, and this closes the loophole where you could retroactively log weekend scores to mess with your numbers.
+        - thanks Simon for finding this vulnerability and being honest about it
+
+- Weekly Leaderboard replacing the all-time leaderboard
+
+    - The leaderboard sitting below the weekly grid now shows this week's standings - each player's average for the days they've played so far.
+
+- All-Time Leaderboard moved into View Stats
+
+    - The all-time average leaderboard has been relocated into the View Stats accordion, below the charts and above Past Weeks (now labeled Historical Data), where it makes more sense alongside the rest of the historical stats.
+
+- Week Wins tracking
+
+    - All-time leaderboard now show a Week Wins column. Wins are recorded automatically on Mondays when the winner banner appears.
+
 ## May 1 2026
 
 - Dimmer placeholder text in the paste modal

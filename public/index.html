@@ -439,7 +439,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 24px;
+      padding: 18px 24px;
       cursor: pointer;
       user-select: none;
       border-top: 1px solid #E5E5E5;
@@ -497,7 +497,7 @@
     }
     .lb-table th:first-child { text-align: center; }
     .lb-table th:nth-child(2) { text-align: left; }
-    .lb-table th:nth-child(3), .lb-table th:nth-child(4) { text-align: right; }
+    .lb-table th:nth-child(3), .lb-table th:nth-child(4), .lb-table th:nth-child(5) { text-align: center; }
     .lb-table td {
       padding: 7px 10px;
       border-bottom: 1px solid #F2F2F2;
@@ -506,7 +506,7 @@
     }
     .lb-table td:first-child { text-align: center; }
     .lb-table td:nth-child(2) { text-align: left; }
-    .lb-table td:nth-child(3), .lb-table td:nth-child(4) { text-align: right; }
+    .lb-table td:nth-child(3), .lb-table td:nth-child(4), .lb-table td:nth-child(5) { text-align: center; }
     .rank-badge {
       display: inline-flex;
       align-items: center;
@@ -642,19 +642,19 @@
       <div id="week-grid-container"></div>
     </div>
 
-    <!-- Leaderboard -->
+    <!-- Weekly Leaderboard -->
     <div class="card card-body">
-      <h2 class="section-title">Leaderboard <span style="font-size:12px;font-weight:400;color:#767676">— lower is better</span></h2>
+      <h2 class="section-title">Weekly Leaderboard<span style="font-size:12px;font-weight:400;color:#767676">- the lower the average, the better</span></h2>
       <table class="lb-table">
         <thead>
           <tr>
             <th>#</th>
             <th>Member</th>
             <th>Avg score</th>
-            <th>Games played</th>
+            <th>Games</th>
           </tr>
         </thead>
-        <tbody id="leaderboard-body"></tbody>
+        <tbody id="weekly-leaderboard-body"></tbody>
       </table>
     </div>
 
@@ -669,17 +669,32 @@
       <div class="accordion-body" id="stats-body">
         <div class="stats-content">
           <div class="stat-section">
-            <div class="stat-label">All-time average score</div>
+            <div class="stat-label">All-time average score <span style="font-size:12px;font-weight:400;color:#767676">- the lower your average, the taller your bar</span></div>
             <canvas id="bar-chart"></canvas>
           </div>
           <div class="stat-section">
-            <div class="stat-label">Score trends over time</div>
+            <div class="stat-label">Score trends over time <span style="font-size:12px;font-weight:400;color:#767676">- lower averages move higher on the graph</span></div>
             <div class="chart-toggle">
               <button class="toggle-btn active" id="toggle-daily" onclick="setChartMode('daily')">Daily</button>
               <button class="toggle-btn" id="toggle-weekly" onclick="setChartMode('weekly')">Weekly</button>
             </div>
             <canvas id="line-chart"></canvas>
           </div>
+        </div>
+        <div class="stat-section" style="margin-top:8px">
+          <div class="stat-label">All-Time Leaderboard</div>
+          <table class="lb-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Member</th>
+                <th>Avg score</th>
+                <th>Games</th>
+                <th>Week Wins</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-body"></tbody>
+          </table>
         </div>
         <div class="past-weeks-accordion-header" onclick="togglePastWeeks()">
           <h2 class="section-title" style="margin-bottom:0;font-size:14px">Past weeks</h2>
@@ -783,6 +798,11 @@
       return score === 'FAILURE' ? 7 : parseInt(score, 10)
     }
 
+    function isWeekend() {
+      const d = new Date().getDay()
+      return d === 0 || d === 6
+    }
+
     function scoreChipStyle(score) {
       if (score === 'FAILURE') return 'background:#FFEBEE;color:#C62828'
       const n = parseInt(score, 10)
@@ -802,6 +822,7 @@
     }
 
     let selectedDate = today()
+    let weekWins = []
 
     function ordinal(n) {
       const s = ['th', 'st', 'nd', 'rd']
@@ -1000,7 +1021,7 @@
         friDate.setDate(friDate.getDate() + 4)
         const fri = friDate.toISOString().slice(0, 10)
         html += `<div class="past-week-label">Week of ${formatDateShort(mon)}</div>`
-        html += buildWeekGrid(weekMap[mon], mon, fri, false)
+        html += buildWeekGrid(weekMap[mon], mon, todayISO, false)
       })
       body.innerHTML = html
     }
@@ -1057,6 +1078,43 @@
       return Object.entries(stats)
         .map(([name, { total, count }]) => ({ name, avg: total / count, count }))
         .sort((a, b) => a.avg - b.avg)
+    }
+
+    function computeWeeklyStats() {
+      const byName = {}
+      weekScores.forEach(s => {
+        if (!byName[s.name]) byName[s.name] = { total: 0, count: 0 }
+        byName[s.name].total += scoreToNum(s.score)
+        byName[s.name].count++
+      })
+      return Object.entries(byName)
+        .map(([name, { total, count }]) => ({ name, avg: total / count, count }))
+        .sort((a, b) => a.avg - b.avg)
+    }
+
+    function renderWeeklyLeaderboard() {
+      const weeklyStats = computeWeeklyStats()
+      const rankStyle = (i) => {
+        if (i === 0) return 'background:#FFF9C4;color:#F9A825'
+        if (i === 1) return 'background:#F5F5F5;color:#757575'
+        if (i === 2) return 'background:#FBE9E7;color:#BF360C'
+        return ''
+      }
+      const tbody = document.getElementById('weekly-leaderboard-body')
+      if (!tbody) return
+      tbody.innerHTML = weeklyStats.map((p, i) => {
+        const rankHtml = i < 3
+          ? `<span class="rank-badge" style="${rankStyle(i)}">${i + 1}</span>`
+          : `<span style="color:#767676;font-size:12px">${i + 1}</span>`
+        const nameStyle = i === 0 ? 'font-weight:700;color:#1B5E20' : 'color:#1A1A1A'
+        const avgStyle = p.avg <= 3.0 ? 'color:#1B5E20;font-weight:700' : p.avg <= 5.0 ? 'color:#E65100;font-weight:700' : 'color:#C62828;font-weight:700'
+        return `<tr>
+          <td>${rankHtml}</td>
+          <td style="${nameStyle}">${escapeHtml(p.name)}</td>
+          <td style="${avgStyle}">${p.avg.toFixed(1)}</td>
+          <td style="color:#767676">${p.count}</td>
+        </tr>`
+      }).join('')
     }
 
     function initCharts() {
@@ -1218,11 +1276,13 @@
           : `<span style="color:#767676;font-size:12px">${i + 1}</span>`
         const nameStyle = i === 0 ? 'font-weight:700;color:#1B5E20' : 'color:#1A1A1A'
         const avgStyle = p.avg <= 3.0 ? 'color:#1B5E20;font-weight:700' : p.avg <= 5.0 ? 'color:#E65100;font-weight:700' : 'color:#C62828;font-weight:700'
+        const wins = (weekWins.find(w => w.name === p.name) || { wins: 0 }).wins
         return `<tr>
           <td>${rankHtml}</td>
           <td style="${nameStyle}">${escapeHtml(p.name)}</td>
           <td style="${avgStyle}">${p.avg.toFixed(1)}</td>
           <td style="color:#767676">${p.count}</td>
+          <td style="color:#767676">${wins}</td>
         </tr>`
       }).join('')
     }
@@ -1313,7 +1373,17 @@
       }
     })
 
-    //  Winner banner 
+    //  Winner banner
+    async function recordWeekWin(name, weekStart) {
+      try {
+        await fetch('/api/week-win', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, week_start: weekStart })
+        })
+      } catch (_) {}
+    }
+
     function renderWinnerBanner() {
       const banner = document.getElementById('winner-banner')
       if (!banner) return
@@ -1355,6 +1425,9 @@
       banner.className = 'winner'
       banner.textContent = `🎉 ${label}: ${names} 🎉`
       banner.style.display = ''
+      if (winners.length === 1) {
+        recordWeekWin(winners[0], monday)
+      }
     }
 
     //  Data loading 
@@ -1364,17 +1437,20 @@
       const friDate = new Date(mondayISO + 'T00:00:00')
       friDate.setDate(friDate.getDate() + 4)
 
-      const [weekRes, allRes] = await Promise.all([
+      const [weekRes, allRes, winsRes] = await Promise.all([
         fetch('/api/scores/week'),
-        fetch('/api/scores/all')
+        fetch('/api/scores/all'),
+        fetch('/api/week-wins')
       ])
       weekScores = await weekRes.json()
       allScores = await allRes.json()
+      weekWins = await winsRes.json()
 
       renderScoreButtons()
       renderWeekGrid()
       renderPastWeeks()
       renderLeaderboard(computePersonStats())
+      renderWeeklyLeaderboard()
       renderWinnerBanner()
 
       if (chartsInitialized) {
@@ -1393,6 +1469,20 @@
       document.getElementById('header-name').textContent = userName
       document.getElementById('current-date').textContent = formatDateFull(today())
       document.getElementById('current-date-mobile').textContent = formatDateMobile(today())
+
+      if (isWeekend()) {
+        document.querySelectorAll('.score-btn, .btn-paste').forEach(btn => {
+          btn.disabled = true
+          btn.style.opacity = '0.4'
+          btn.style.cursor = 'not-allowed'
+        })
+        const resetBtn = document.getElementById('reset-btn')
+        if (resetBtn) { resetBtn.style.display = 'none' }
+        const weekendNote = document.createElement('p')
+        weekendNote.style.cssText = 'color:#767676;font-size:13px;margin:8px 0 0;text-align:center'
+        weekendNote.textContent = 'Score entry is closed on weekends.'
+        document.querySelector('.score-buttons').after(weekendNote)
+      }
 
       refreshData()
     }

@@ -30,6 +30,10 @@ export async function onRequestOptions() {
 export async function onRequestPost({ request, env }) {
   let body
   try { body = await request.json() } catch { return json({ error: 'Invalid JSON' }, 400) }
+  const serverDay = new Date().getDay()
+  if (serverDay === 0 || serverDay === 6) {
+    return json({ error: 'Score entry is closed on weekends.' }, 403)
+  }
   const { name, score, date } = body
   if (!name || !score) return json({ error: 'name and score required' }, 400)
   if (typeof name !== 'string' || name.trim().length > 20 || !/^[A-Za-z\s'-]+$/.test(name.trim())) {
