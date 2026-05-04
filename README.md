@@ -31,9 +31,11 @@ Also added a general password for people as a bit of a speedbump for anyone who 
 ### Score submission (`index.html`)
 Six buttons: `1` through `6` and `FAILURE`. Color-coded (bad scores are red). One score per person per day, restricted at the DB level. You can reset your score for the day if you fat-fingered it or whatever.
 
+There's also a "Paste Wordle Share Card" button that opens a modal where you can paste in the share text straight from the NYT app. It parses the score automatically, validates that the Wordle number matches the selected date (using the June 20, 2021 epoch), and submits with one click. Escape can close, and Enter to submit once a valid result is detected.
+
 You can also click any day in the current week's grid to enter or update a score for that day retroactively — useful if you forgot to log Tuesday's score. The score card title updates to reflect whichever day you've got selected.
 
-There's also a "Paste Wordle Share Card" button that opens a modal where you can paste in the share text straight from the NYT app. It parses the score automatically, validates that the Wordle number matches the selected date (using the June 20, 2021 epoch), and submits with one click. Escape to close, Enter to submit once a valid result is detected.
+Score entry is blocked on Saturdays and Sundays - the buttons are disabled in the UI and the API will reject submissions outright (thanks simon for finding this and being honest about it lol).
 
 If you haven't logged a score yet for the day, there's a direct link to the NYT Wordle below the buttons so you don't have to go hunting for it.
 
@@ -59,8 +61,15 @@ An accordion below the leaderboard. Has:
 ├── public/
 │   ├── welcome.html       # Name entry / user selection
 │   └── index.html         # Main app
-├── worker/
-│   └── index.js           # Cloudflare Worker — all API routes
+├── functions/
+│   └── api/
+│       ├── score.js       # POST/DELETE /api/score
+│       ├── users.js       # GET /api/users
+│       ├── week-win.js    # POST /api/week-win
+│       ├── week-wins.js   # GET /api/week-wins
+│       └── scores/
+│           ├── all.js     # GET /api/scores/all
+│           └── week.js    # GET /api/scores/week
 ├── schema.sql             # D1 database schema
 └── wrangler.toml          # Cloudflare config
 ```
@@ -69,15 +78,17 @@ An accordion below the leaderboard. Has:
 
 ## API Routes
 
-All handled by `worker/index.js`. Names are normalized to title case on every write.
+All handled by the `functions/api/` directory. Names are normalized to title case on every write.
 
 | Method | Route | Description |
 |---|---|---|
 | `GET` | `/api/users` | All unique names ever recorded |
-| `POST` | `/api/score` | Submit or overwrite a score (today by default, or a specific date) |
+| `POST` | `/api/score` | Submit or overwrite a score (today by default, or a specific date). Blocked on weekends. |
 | `DELETE` | `/api/score` | Delete a score (today by default, or a specific date) |
 | `GET` | `/api/scores/week` | All scores for the current Mon–Fri week |
 | `GET` | `/api/scores/all` | All scores, all time |
+| `GET` | `/api/week-wins` | Win count per player, all time |
+| `POST` | `/api/week-win` | Record a winner for a given week (idempotent) |
 
 **POST `/api/score` body:**
 ```json
@@ -101,9 +112,16 @@ CREATE TABLE IF NOT EXISTS scores (
   date  TEXT    NOT NULL,
   UNIQUE(name, date)
 );
+
+CREATE TABLE IF NOT EXISTS week_wins (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  name       TEXT NOT NULL,
+  week_start TEXT NOT NULL,
+  UNIQUE(name, week_start)
+);
 ```
 
-The `UNIQUE(name, date)` constraint is what enforces one score per person per day — the Worker uses `INSERT OR REPLACE` so a same-day resubmit just overwrites cleanly.
+The `UNIQUE(name, date)` constraint is what enforces one score per person per day — the Worker uses `INSERT OR REPLACE` so a same-day resubmit just overwrites cleanly. `week_wins` uses `UNIQUE(name, week_start)` so wins are idempotent; recording the same winner twice for the same week won't happen.
 
 ---
 
